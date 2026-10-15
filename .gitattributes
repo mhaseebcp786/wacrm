@@ -1,0 +1,7 @@
+* text=auto eol=lf
+
+# Conflict-free union merge for shared agent instruction and ignore files
+AGENTS.md merge=union
+CLAUDE.md merge=union
+.gitignore merge=union
+.prettierignore merge=union
