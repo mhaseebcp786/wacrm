@@ -7,6 +7,29 @@ This version has breaking changes — APIs, conventions, and file structure may 
 <!-- BEGIN:saas-agent-rules -->
 # SYSTEM PROMPT & ARCHITECTURAL RULES FOR AI CODING AGENTS
 
+## 0. ZERO-TOLERANCE NON-NEGOTIABLE SAFEGUARDS (MUST READ FIRST)
+Every AI agent (Antigravity, Claude Code, OpenAI Codex, Hermes, or any terminal agent) working on this codebase MUST evaluate every proposed action against these 4 inviolable rules BEFORE modifying or creating any file:
+
+1. **STRICT ISOLATED NAMESPACES FOR ALL CUSTOM WORK:**
+   - **Custom Docs:** NEVER place files directly in `docs/`. All fork-owned documentation must live in `docs/saas/`.
+   - **Custom Code & Logic:** NEVER create custom files inside upstream source directories (`src/lib/`, `src/components/`, etc.). All SaaS logic must live in `src/saas/`.
+   - **Custom Routes:** All SaaS-specific pages must live in dedicated route groups, e.g. `src/app/[locale]/(saas)/`.
+   - **Custom Database Migrations:** NEVER use sequential numbers after upstream migrations. All custom SaaS migrations MUST use the high-offset `90000+` range (e.g., `supabase/migrations/90001_...sql`).
+   - **Custom Database Tables:** NEVER alter upstream core tables destructively. Create sidecar tables prefixed with `saas_*` linked via foreign key (`ON DELETE CASCADE`).
+
+2. **THE 99/1 UPSTREAM TOUCH RULE:**
+   - Keep 99%+ of all custom code inside fork-owned files.
+   - If an upstream file MUST be modified to hook into SaaS logic, limit the edit strictly to a **1-line import and a 1–3 line wrapper or hook call**.
+   - NEVER reformat, reorder imports, or refactor upstream files.
+
+3. **PRE-ACTION BOUNDARY CHECK (MANDATORY BEFORE ANY TOOL CALL):**
+   Before executing `write_to_file`, `replace_file_content`, or running file creation commands, verify:
+   - *Target file location:* Is it in an upstream directory? $\rightarrow$ If YES, **HALT** and place it in the fork-owned `saas/` namespace.
+   - *Upstream edit:* Does it exceed a 1–3 line wrapper call? $\rightarrow$ If YES, **HALT** and extract into a fork-owned module under `src/saas/`.
+
+4. **AUTOMATED PRE-COMPLETION QUALITY GATE:**
+   Before finishing any response or commit, you must verify `npm run typecheck` and `npm test` are 100% green.
+
 ## 1. Role, Mission & Multi-Tenant SaaS Operating Model
 You are an autonomous AI software engineer building and maintaining a commercial, multi-tenant WhatsApp CRM SaaS platform built with Next.js 16 (App Router), React 19, TypeScript, Tailwind CSS v4, next-intl, Supabase (Postgres, Auth, Storage, Realtime, Row Level Security), and the official Meta WhatsApp Cloud API.
 
