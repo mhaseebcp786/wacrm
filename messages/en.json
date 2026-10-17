@@ -330,7 +330,14 @@
       "send": "Send template",
       "headerVarLabel": "Header {var}",
       "bodyVarLabel": "Body {var}",
-      "urlButtonVarLabel": "URL button \"{text}\" — value for {var}"
+      "urlButtonVarLabel": "URL button \"{text}\" — value for {var}",
+      "mediaHeaderTitle": "Confirm Media",
+      "mediaHeaderDesc": "This template has a {type} header. Confirm the media URL before sending.",
+      "mediaUrl": "Media URL",
+      "mediaUrlPlaceholder": "https://cdn.example.com/media",
+      "confirmSend": "Confirm & Send",
+      "uploadFile": "Upload File",
+      "uploading": "Uploading…"
     },
     "sidebar": {
       "contactInfo": "Contact info",
@@ -850,6 +857,14 @@
         "headerImageDesc": "This template requires a header image.",
         "imageUrl": "Image URL",
         "imageUrlPlaceholder": "https://example.com/image.jpg",
+        "headerVideo": "Video Header",
+        "headerDocument": "Document Header",
+        "mediaUrl": "Media URL",
+        "mediaUrlPlaceholder": "https://cdn.example.com/media",
+        "headerVideoDesc": "Public MP4 or 3GPP URL. Meta fetches this at delivery time.",
+        "headerDocumentDesc": "Public PDF, Word, PowerPoint, Excel, or plain text URL.",
+        "uploadMedia": "Upload File",
+        "uploadingMedia": "Uploading…",
         "variables": "Variables",
         "varDesc": "Set values for {{name}}",
         "type": "Type",
@@ -1655,7 +1670,24 @@
         "Marketing": "Marketing",
         "Utility": "Utility",
         "Authentication": "Authentication"
-      }
+      },
+      "carousel": "Carousel",
+      "carouselCards": "Cards",
+      "addCard": "Add Card",
+      "removeCard": "Remove Card",
+      "cardIndex": "Card {n}",
+      "cardHeaderType": "Header Type",
+      "cardHeaderUrl": "Header URL",
+      "cardBody": "Card Body",
+      "cardButton": "Card Button",
+      "carouselButtonType": "Button Type",
+      "carouselButtonTypeCta": "CTA URL",
+      "carouselButtonTypeReply": "Quick Reply",
+      "carouselMinCards": "Minimum 2 cards required",
+      "carouselMaxCards": "Maximum 10 cards allowed",
+      "carouselCardBodyTooLong": "Card body exceeds 160 character limit",
+      "carouselButtonsMixed": "All cards must use the same button type",
+      "carouselHeaderOnlyImageVideo": "Carousel cards only support image or video headers (not PDF/document)"
     },
     "roles": {
       "admin": "Admin",
@@ -2185,7 +2217,10 @@
     "rowDescriptionPlaceholder": "Description (optional)",
     "addRow": "Add row",
     "addSection": "Add section",
-    "defaultListButton": "Menu"
+    "defaultListButton": "Menu",
+    "carousel": "Carousel",
+    "carouselBody": "Intro Text",
+    "carouselBodyPlaceholder": "Here are our featured products:"
   },
   "DashboardShell": {
     "loading": "Loading..."

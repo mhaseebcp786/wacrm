@@ -330,7 +330,14 @@
       "send": "템플릿 보내기",
       "headerVarLabel": "헤더 {var}",
       "bodyVarLabel": "본문 {var}",
-      "urlButtonVarLabel": "URL 버튼 \"{text}\" — {var} 값"
+      "urlButtonVarLabel": "URL 버튼 \"{text}\" — {var} 값",
+      "mediaHeaderTitle": "Confirm Media",
+      "mediaHeaderDesc": "This template has a {type} header. Confirm the media URL before sending.",
+      "mediaUrl": "Media URL",
+      "mediaUrlPlaceholder": "https://cdn.example.com/media",
+      "confirmSend": "Confirm & Send",
+      "uploadFile": "Upload File",
+      "uploading": "Uploading…"
     },
     "sidebar": {
       "contactInfo": "연락처 정보",
@@ -850,6 +857,14 @@
         "headerImageDesc": "이 템플릿에는 헤더 이미지가 필요합니다.",
         "imageUrl": "이미지 URL",
         "imageUrlPlaceholder": "https://example.com/image.jpg",
+        "headerVideo": "Video Header",
+        "headerDocument": "Document Header",
+        "mediaUrl": "Media URL",
+        "mediaUrlPlaceholder": "https://cdn.example.com/media",
+        "headerVideoDesc": "Public MP4 or 3GPP URL. Meta fetches this at delivery time.",
+        "headerDocumentDesc": "Public PDF, Word, PowerPoint, Excel, or plain text URL.",
+        "uploadMedia": "Upload File",
+        "uploadingMedia": "Uploading…",
         "variables": "변수",
         "varDesc": "{{name}}의 값을 설정하세요",
         "type": "유형",
@@ -1655,7 +1670,24 @@
         "Marketing": "마케팅",
         "Utility": "유틸리티",
         "Authentication": "인증"
-      }
+      },
+      "carousel": "캐러셀",
+      "carouselCards": "카드",
+      "addCard": "카드 추가",
+      "removeCard": "카드 제거",
+      "cardIndex": "카드 {n}",
+      "cardHeaderType": "헤더 유형",
+      "cardHeaderUrl": "헤더 URL",
+      "cardBody": "카드 본문",
+      "cardButton": "카드 버튼",
+      "carouselButtonType": "버튼 유형",
+      "carouselButtonTypeCta": "CTA URL",
+      "carouselButtonTypeReply": "빠른 답장",
+      "carouselMinCards": "최소 2개의 카드가 필요합니다",
+      "carouselMaxCards": "최대 10개의 카드까지 허용됩니다",
+      "carouselCardBodyTooLong": "카드 본문이 160자 제한을 초과합니다",
+      "carouselButtonsMixed": "모든 카드는 동일한 버튼 유형을 사용해야 합니다",
+      "carouselHeaderOnlyImageVideo": "캐러셀 카드는 이미지 또는 동영상 헤더만 지원합니다(PDF/문서 불가)"
     },
     "roles": {
       "admin": "관리자",
@@ -2185,7 +2217,10 @@
     "rowDescriptionPlaceholder": "설명 (선택)",
     "addRow": "행 추가",
     "addSection": "섹션 추가",
-    "defaultListButton": "메뉴"
+    "defaultListButton": "메뉴",
+    "carousel": "캐러셀",
+    "carouselBody": "소개 텍스트",
+    "carouselBodyPlaceholder": "추천 제품을 확인해 보세요:"
   },
   "DashboardShell": {
     "loading": "불러오는 중..."

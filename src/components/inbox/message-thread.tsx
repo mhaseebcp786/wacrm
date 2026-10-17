@@ -49,7 +49,7 @@ import {
   type SendMediaPayload,
 } from "./message-composer";
 import { deleteAccountMedia } from "@/lib/storage/upload-media";
-import { TemplatePicker } from "./template-picker";
+import { TemplatePickerWithMedia } from "@/saas/components/template-picker-with-media";
 import { AiThreadBanner } from "./ai-thread-banner";
 import { buildReplyPreview } from "./reply-quote";
 import { renderTemplateBody } from "@/lib/whatsapp/template-body";
@@ -667,6 +667,7 @@ export function MessageThread({
         headerText?: string;
         buttonParams?: Record<number, string>;
       },
+      headerMediaUrl?: string,
     ) => {
       if (!conversation) return;
 
@@ -702,6 +703,7 @@ export function MessageThread({
               body: values.body,
               headerText: values.headerText,
               buttonParams: values.buttonParams,
+              headerMediaUrl,
             },
             template_params: values.body,
             content_text: renderedBody,
@@ -1188,10 +1190,10 @@ export function MessageThread({
         onClearReply={() => setReplyTo(null)}
       />
 
-      <TemplatePicker
+      <TemplatePickerWithMedia
         open={templateModalOpen}
         onOpenChange={setTemplateModalOpen}
-        onSelect={handleSendTemplate}
+        onSelectWithMedia={handleSendTemplate}
       />
 
       {/* Full-size viewer for the thread's images/videos. Renders nothing

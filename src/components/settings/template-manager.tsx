@@ -57,11 +57,10 @@ import {
   extractVariableIndices,
   TEMPLATE_LIMITS,
 } from '@/lib/whatsapp/template-validators';
+import { SaasHeaderFormat as HeaderFormat, SAAS_HEADER_FORMATS as HEADER_FORMATS } from '@/saas/lib/whatsapp/template-format-extension';
+import { CarouselCardEditor } from '@/saas/components/carousel-card-editor';
 
 const CATEGORIES = ['Marketing', 'Utility', 'Authentication'] as const;
-type HeaderFormat = 'none' | 'text' | 'image' | 'video' | 'document';
-const HEADER_FORMATS: HeaderFormat[] = ['none', 'text', 'image', 'video', 'document'];
-
 const categoryColors: Record<string, string> = {
   Marketing: 'bg-purple-600/20 text-purple-400 border-purple-600/30',
   Utility: 'bg-blue-600/20 text-blue-400 border-blue-600/30',
@@ -239,6 +238,10 @@ export function TemplateManager() {
       buttons: form.buttons.length > 0 ? form.buttons : undefined,
       sample_values:
         Object.keys(sample_values).length > 0 ? sample_values : undefined,
+      carousel_cards:
+        form.header_format === 'carousel'
+          ? (form as any).carousel_cards
+          : undefined,
     };
   }
 
@@ -804,7 +807,9 @@ export function TemplateManager() {
                             ? t('headerImage')
                             : type === 'video'
                               ? t('headerVideo')
-                              : t('headerDocument')}
+                              : type === 'document'
+                                ? t('headerDocument')
+                                : t('carousel')}
                     </SelectItem>
                   ))}
                 </SelectContent>
@@ -898,6 +903,10 @@ export function TemplateManager() {
                       t('documentHint')}
                   </p>
                 </div>
+              )}
+
+              {form.header_format === 'carousel' && (
+                <CarouselCardEditor cards={(form as any).carousel_cards || []} onChange={(cards) => setForm((prev) => ({ ...prev, carousel_cards: cards } as any))} />
               )}
             </div>
 

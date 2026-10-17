@@ -330,7 +330,14 @@
       "send": "Enviar plantilla",
       "headerVarLabel": "Encabezado {var}",
       "bodyVarLabel": "Cuerpo {var}",
-      "urlButtonVarLabel": "Botón de URL \"{text}\": valor para {var}"
+      "urlButtonVarLabel": "Botón de URL \"{text}\": valor para {var}",
+      "mediaHeaderTitle": "Confirm Media",
+      "mediaHeaderDesc": "This template has a {type} header. Confirm the media URL before sending.",
+      "mediaUrl": "Media URL",
+      "mediaUrlPlaceholder": "https://cdn.example.com/media",
+      "confirmSend": "Confirm & Send",
+      "uploadFile": "Upload File",
+      "uploading": "Uploading…"
     },
     "sidebar": {
       "contactInfo": "Información del contacto",
@@ -850,6 +857,14 @@
         "headerImageDesc": "Esta plantilla requiere una imagen de encabezado.",
         "imageUrl": "URL de la imagen",
         "imageUrlPlaceholder": "https://example.com/image.jpg",
+        "headerVideo": "Video Header",
+        "headerDocument": "Document Header",
+        "mediaUrl": "Media URL",
+        "mediaUrlPlaceholder": "https://cdn.example.com/media",
+        "headerVideoDesc": "Public MP4 or 3GPP URL. Meta fetches this at delivery time.",
+        "headerDocumentDesc": "Public PDF, Word, PowerPoint, Excel, or plain text URL.",
+        "uploadMedia": "Upload File",
+        "uploadingMedia": "Uploading…",
         "variables": "Variables",
         "varDesc": "Define valores para {{name}}",
         "type": "Tipo",
@@ -1655,7 +1670,24 @@
         "Marketing": "Marketing",
         "Utility": "Utilidad",
         "Authentication": "Autenticación"
-      }
+      },
+      "carousel": "Carrusel",
+      "carouselCards": "Tarjetas",
+      "addCard": "Agregar tarjeta",
+      "removeCard": "Eliminar tarjeta",
+      "cardIndex": "Tarjeta {n}",
+      "cardHeaderType": "Tipo de encabezado",
+      "cardHeaderUrl": "URL del encabezado",
+      "cardBody": "Cuerpo de la tarjeta",
+      "cardButton": "Botón de la tarjeta",
+      "carouselButtonType": "Tipo de botón",
+      "carouselButtonTypeCta": "URL de llamada a la acción",
+      "carouselButtonTypeReply": "Respuesta rápida",
+      "carouselMinCards": "Se requieren mínimo 2 tarjetas",
+      "carouselMaxCards": "Se permiten máximo 10 tarjetas",
+      "carouselCardBodyTooLong": "El cuerpo de la tarjeta excede el límite de 160 caracteres",
+      "carouselButtonsMixed": "Todas las tarjetas deben usar el mismo tipo de botón",
+      "carouselHeaderOnlyImageVideo": "Las tarjetas de carrusel solo admiten encabezados de imagen o video (no PDF/documento)"
     },
     "roles": {
       "admin": "Administrador",
@@ -2185,7 +2217,10 @@
     "rowDescriptionPlaceholder": "Descripción (opcional)",
     "addRow": "Agregar fila",
     "addSection": "Agregar sección",
-    "defaultListButton": "Menú"
+    "defaultListButton": "Menú",
+    "carousel": "Carrusel",
+    "carouselBody": "Texto de introducción",
+    "carouselBodyPlaceholder": "Aquí están nuestros productos destacados:"
   },
   "DashboardShell": {
     "loading": "Cargando..."

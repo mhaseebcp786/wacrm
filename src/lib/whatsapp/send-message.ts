@@ -29,6 +29,7 @@ import {
   sendInteractiveList,
   type MediaKind,
 } from '@/lib/whatsapp/meta-api';
+import { validateSaasMessageType, dispatchSaasMessage, SAAS_MESSAGE_TYPES } from '@/saas/lib/whatsapp/send-message-extensions';
 import {
   validateInteractivePayload,
   interactivePayloadPreviewText,
@@ -53,6 +54,7 @@ export const VALID_MESSAGE_TYPES = [
   'text',
   'template',
   'interactive',
+  ...SAAS_MESSAGE_TYPES,
   ...MEDIA_KINDS,
 ] as const;
 
@@ -159,6 +161,9 @@ export function validateSendMessageParams(params: {
       throw new SendMessageError('bad_request', result.error, 400);
     }
   }
+
+  const saasValidationError = validateSaasMessageType(messageType, interactivePayload);
+  if (saasValidationError) throw new SendMessageError('bad_request', saasValidationError, 400);
 
   if (isMediaKind && !mediaUrl) {
     throw new SendMessageError(
@@ -367,6 +372,8 @@ export async function sendMessageToConversation(
       });
       return result.messageId;
     }
+    const saasMessageId = await dispatchSaasMessage({ messageType, phoneNumberId: config.phone_number_id, accessToken, to: phone, interactivePayload, contextMessageId });
+    if (saasMessageId) return saasMessageId;
     if (messageType === 'interactive') {
       const p = interactivePayload!;
       if (p.kind === 'buttons') {
@@ -463,7 +470,7 @@ export async function sendMessageToConversation(
   // most importantly) sends none, and storing null there left the
   // Inbox rendering an empty bubble — issue #483.
   const persistedText =
-    messageType === 'interactive'
+    messageType === 'interactive' || messageType === 'carousel'
       ? interactivePayload!.body
       : messageType === 'template'
         ? templateContentText(
@@ -483,7 +490,9 @@ export async function sendMessageToConversation(
       media_url: mediaUrl || null,
       template_name: templateName || null,
       interactive_payload:
-        messageType === 'interactive' ? interactivePayload : null,
+        messageType === 'interactive' || messageType === 'carousel'
+          ? interactivePayload
+          : null,
       message_id: waMessageId,
       status: 'sent',
       reply_to_message_id: replyToMessageId || null,
