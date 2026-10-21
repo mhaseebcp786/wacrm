@@ -9,6 +9,7 @@ import { decrypt } from '@/lib/whatsapp/encryption'
 import { normalizeStatus } from '@/lib/whatsapp/template-status-normalize'
 import type { TemplateButton, TemplateSampleValues } from '@/types'
 import { getT } from '@/lib/i18n/translate'
+import { saasCarouselSyncFields } from '@/saas/lib/whatsapp/carousel-template-sync'
 
 const t = getT('Api')
 
@@ -241,6 +242,8 @@ export async function POST() {
         quality_score: normalizeQualityScore(t.quality_score),
         updated_at: new Date().toISOString(),
       }
+
+      Object.assign(row, await saasCarouselSyncFields(supabase, accountId, t))
 
       const { data: existing, error: lookupErr } = await supabase
         .from('message_templates')

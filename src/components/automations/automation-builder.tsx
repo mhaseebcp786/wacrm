@@ -72,6 +72,7 @@ import {
   type StepPath,
 } from "@/lib/automations/builder-tree"
 import { cn } from "@/lib/utils"
+import { isSendableInAutomation } from "@/saas/lib/whatsapp/automation-templates"
 
 // ------------------------------------------------------------
 // Types (builder-local — mirror the flattened rows we POST)
@@ -280,7 +281,7 @@ function ResourcesProvider({ children }: { children: ReactNode }) {
         ])
       if (cancelled) return
       setTags((tagsRes.data as TagRecord[] | null) ?? [])
-      setTemplates((templatesRes.data as MessageTemplate[] | null) ?? [])
+      setTemplates(((templatesRes.data as MessageTemplate[] | null) ?? []).filter(isSendableInAutomation))
       setCustomFields((customFieldsRes.data as CustomField[] | null) ?? [])
       setPipelines((pipelinesRes.data as PipelineOption[] | null) ?? [])
       setStages((stagesRes.data as PipelineStageOption[] | null) ?? [])

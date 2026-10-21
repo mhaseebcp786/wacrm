@@ -8,9 +8,9 @@ import { formatCurrency } from '@/lib/currency';
 import { toast } from 'sonner';
 import type { Contact, Tag, ContactTag, ContactNote, CustomField, ContactCustomValue, Deal, MessageTemplate } from '@/types';
 import {
-  TemplatePicker,
   type TemplateSendValues,
 } from '@/components/inbox/template-picker';
+import { TemplatePickerWithMedia, type CarouselCardSendParams } from '@/saas/components/template-picker-with-media';
 import {
   Sheet,
   SheetContent,
@@ -339,6 +339,8 @@ export function ContactDetailView({
   async function handleSendTemplate(
     template: MessageTemplate,
     values: TemplateSendValues,
+    headerMediaUrl?: string,
+    carouselCards?: CarouselCardSendParams[],
   ) {
     if (!contactId) return;
     setSendingTemplate(true);
@@ -357,6 +359,8 @@ export function ContactDetailView({
             body: values.body,
             headerText: values.headerText,
             buttonParams: values.buttonParams,
+            headerMediaUrl,
+            carouselCards,
           },
           template_params: values.body,
         }),
@@ -761,10 +765,10 @@ export function ContactDetailView({
         )}
       </SheetContent>
     </Sheet>
-    <TemplatePicker
+    <TemplatePickerWithMedia
       open={templatePickerOpen}
       onOpenChange={setTemplatePickerOpen}
-      onSelect={handleSendTemplate}
+      onSelectWithMedia={handleSendTemplate}
     />
     </>
   );

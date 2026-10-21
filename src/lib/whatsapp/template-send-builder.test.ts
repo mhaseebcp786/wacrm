@@ -128,7 +128,7 @@ describe('buildSendComponents — header', () => {
     );
     expect(components[0]).toEqual({
       type: 'header',
-      parameters: [{ type: 'document', document: { link: 'https://x.com/doc.pdf' } }],
+      parameters: [{ type: 'document', document: { link: 'https://x.com/doc.pdf', filename: 'doc.pdf' } }],
     });
   });
 

@@ -7,6 +7,7 @@ import { usePresence } from "@/hooks/use-presence";
 import { PresenceDot } from "@/components/presence/presence-dot";
 import { presenceLabel } from "@/lib/presence";
 import { cn } from "@/lib/utils";
+import { interactiveMessageTypeFor } from "@/saas/lib/whatsapp/carousel-interactive";
 import type {
   Conversation,
   Message,
@@ -50,6 +51,7 @@ import {
 } from "./message-composer";
 import { deleteAccountMedia } from "@/lib/storage/upload-media";
 import { TemplatePickerWithMedia } from "@/saas/components/template-picker-with-media";
+import type { CarouselCardSendParams } from "@/saas/lib/whatsapp/template-form-carousel";
 import { AiThreadBanner } from "./ai-thread-banner";
 import { buildReplyPreview } from "./reply-quote";
 import { renderTemplateBody } from "@/lib/whatsapp/template-body";
@@ -598,7 +600,7 @@ export function MessageThread({
         id: tempId,
         conversation_id: conversation.id,
         sender_type: "agent",
-        content_type: "interactive",
+        content_type: interactiveMessageTypeFor(payload),
         content_text: payload.body,
         interactive_payload: payload,
         status: "sending",
@@ -613,7 +615,7 @@ export function MessageThread({
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
             conversation_id: conversation.id,
-            message_type: "interactive",
+            message_type: interactiveMessageTypeFor(payload),
             interactive_payload: payload,
             reply_to_message_id: replyToId,
           }),
@@ -668,6 +670,7 @@ export function MessageThread({
         buttonParams?: Record<number, string>;
       },
       headerMediaUrl?: string,
+      carouselCards?: CarouselCardSendParams[],
     ) => {
       if (!conversation) return;
 
@@ -704,6 +707,7 @@ export function MessageThread({
               headerText: values.headerText,
               buttonParams: values.buttonParams,
               headerMediaUrl,
+              carouselCards,
             },
             template_params: values.body,
             content_text: renderedBody,

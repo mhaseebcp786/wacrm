@@ -53,6 +53,7 @@ import {
   blankButtonsPayload,
 } from "@/components/interactive/interactive-builder";
 import { validateInteractivePayload } from "@/lib/whatsapp/interactive";
+import { CarouselComposerButton } from "@/saas/components/carousel-composer-button";
 import type { InteractiveMessagePayload, QuickReply } from "@/types";
 import { QuickReplyPicker } from "./quick-reply-picker";
 
@@ -699,6 +700,8 @@ export function MessageComposer({
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
+
+          <CarouselComposerButton disabled={inputsDisabled} replyToId={replyTo?.id} onSendInteractive={onSendInteractive} onSent={onClearReply} />
 
           <GatedButton
             variant="ghost"

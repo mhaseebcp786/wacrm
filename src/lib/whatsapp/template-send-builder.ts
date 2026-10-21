@@ -33,6 +33,7 @@
 import type { MessageTemplate, TemplateButton } from '@/types';
 import { extractVariableIndices } from './template-validators';
 import { getT } from '@/lib/i18n/translate';
+import { isCarouselTemplate, buildCarouselSendComponents, documentFilenameFromUrl, type CarouselCardSendParams, type SaasCarouselSendComponent } from '@/saas/lib/whatsapp/carousel-template-send';
 
 const t = getT('Validation.templates');
 
@@ -52,9 +53,11 @@ export interface SendTimeParams {
    * override at send time.
    */
   buttonParams?: Record<number, string>;
+  carouselCards?: CarouselCardSendParams[];
 }
 
 export type MetaSendComponent =
+  | SaasCarouselSendComponent
   | { type: 'header'; parameters: MetaSendParameter[] }
   | { type: 'body'; parameters: MetaSendParameter[] }
   | {
@@ -68,7 +71,7 @@ type MetaSendParameter =
   | { type: 'text'; text: string }
   | { type: 'image'; image: { link?: string; id?: string } }
   | { type: 'video'; video: { link?: string; id?: string } }
-  | { type: 'document'; document: { link?: string; id?: string } }
+  | { type: 'document'; document: { link?: string; id?: string; filename?: string } }
   | { type: 'coupon_code'; coupon_code: string }
   | { type: 'payload'; payload: string };
 
@@ -121,7 +124,7 @@ function buildHeaderComponent(
         ? { type: 'image', image: mediaPayload }
         : headerType === 'video'
           ? { type: 'video', video: mediaPayload }
-          : { type: 'document', document: mediaPayload },
+          : { type: 'document', document: { ...mediaPayload, filename: documentFilenameFromUrl(mediaPayload.link) } },
     ],
   };
 }
@@ -223,6 +226,7 @@ export function buildSendComponents(
   template: MessageTemplate,
   params: SendTimeParams = {},
 ): MetaSendComponent[] {
+  if (isCarouselTemplate(template)) return buildCarouselSendComponents(template, params);
   const out: MetaSendComponent[] = [];
   const header = buildHeaderComponent(template, params);
   if (header) out.push(header);

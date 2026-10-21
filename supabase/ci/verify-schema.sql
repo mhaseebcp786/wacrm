@@ -133,6 +133,34 @@ BEGIN
       'idx_automation_pending_awaiting_reply is missing — migration 045 did not apply';
   END IF;
 
+  -- ===== SaaS fork assertions (migration 90001 — carousel) =====
+  -- A later upstream migration that re-creates these CHECKs by name would
+  -- silently drop 'carousel' and break carousel sends at insert time.
+  IF COALESCE(pg_get_constraintdef(
+       (SELECT oid FROM pg_constraint
+        WHERE conname = 'messages_content_type_check'
+          AND conrelid = 'public.messages'::regclass)
+     ), '') NOT LIKE '%carousel%' THEN
+    RAISE EXCEPTION
+      'messages_content_type_check does not allow carousel — migration 90001 did not apply or was overwritten';
+  END IF;
+  IF COALESCE(pg_get_constraintdef(
+       (SELECT oid FROM pg_constraint
+        WHERE conname = 'message_templates_header_type_check'
+          AND conrelid = 'public.message_templates'::regclass)
+     ), '') NOT LIKE '%carousel%' THEN
+    RAISE EXCEPTION
+      'message_templates_header_type_check does not allow carousel — migration 90001 did not apply or was overwritten';
+  END IF;
+  IF NOT EXISTS (
+    SELECT 1 FROM information_schema.columns
+    WHERE table_schema = 'public' AND table_name = 'message_templates'
+      AND column_name = 'carousel_cards'
+  ) THEN
+    RAISE EXCEPTION 'message_templates.carousel_cards is missing — migration 90001 did not apply';
+  END IF;
+  -- ===== end SaaS fork assertions =====
+
   RAISE NOTICE 'schema verification passed';
 END
 $$;

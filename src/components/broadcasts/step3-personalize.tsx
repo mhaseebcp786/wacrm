@@ -15,6 +15,7 @@ import {
 import { ArrowLeft, ArrowRight, Eye, Loader2 } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { TemplateHeaderMediaInput } from '@/saas/components/template-header-media-input';
+import { BroadcastCarouselSection, useBroadcastStep3Extras } from '@/saas/components/broadcast-carousel-section';
 
 type VariableType = 'static' | 'field' | 'custom_field';
 
@@ -235,6 +236,7 @@ export function Step3Personalize({
     t,
   ]);
 
+  const saasStep3 = useBroadcastStep3Extras(template, headerMediaUrl);
   const previewLabel = firstContact
     ? firstContact.name || firstContact.phone
     : t('personalize.previewSample');
@@ -256,7 +258,8 @@ export function Step3Personalize({
         />
       )}
 
-      {placeholders.length === 0 && !mediaHeaderType ? (
+      <BroadcastCarouselSection template={template} />
+      {placeholders.length === 0 && !mediaHeaderType && !saasStep3.isCarousel ? (
         <div className="rounded-xl border border-border bg-card/50 p-6 text-center">
           <p className="text-sm text-muted-foreground">
             {t('personalize.noPreview')}
@@ -412,7 +415,7 @@ export function Step3Personalize({
         </Button>
         <Button
           onClick={onNext}
-          disabled={unmappedKeys.length > 0 || headerMediaError !== null}
+          disabled={unmappedKeys.length > 0 || headerMediaError !== null || saasStep3.blocked}
           className="bg-primary text-primary-foreground hover:bg-primary/90 disabled:opacity-50"
         >
           {t('next')}

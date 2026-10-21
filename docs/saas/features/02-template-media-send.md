@@ -64,6 +64,12 @@ The `components` array can include a `HEADER` component with `type: "video"` or 
 
 ---
 
+## 2026-10-21 update (LeminAi parity)
+- Document headers now send a `filename` (derived from the URL) so recipients see a real name.
+- Validation is shared (`src/saas/lib/whatsapp/media-specs.ts`): image jpg/jpeg/png ≤ 5 MB, video mp4/3gp ≤ 16 MB, document pdf/doc/docx/xls/xlsx/ppt/pptx/txt (template header sample: PDF only); pasted URLs are type-checked when they carry an extension. Error toasts are translated (`SaasTemplates` namespace).
+- The confirm step shows a PDF row preview (icon + file name).
+- Known gap: scheduled/resumed broadcasts do not forward per-send media (upstream limitation); they use the template's stored sample URL.
+
 ## Key constraints
 
 - Video headers: MP4 or 3GPP, public HTTPS URL

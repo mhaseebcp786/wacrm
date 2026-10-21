@@ -15,6 +15,7 @@ import { normalizeKey } from '@/lib/contacts/dedupe';
 import { fetchAllInChunks, fetchAllPages } from '@/lib/supabase/paged-query';
 import { BroadcastRecipient, Contact, MessageTemplate } from '@/types';
 import { getT } from '@/lib/i18n/translate';
+import { broadcastRecipientParams } from '@/saas/lib/whatsapp/broadcast-carousel-store';
 
 export type {
   AudienceConfig,
@@ -436,7 +437,7 @@ export function useBroadcastSending(): UseBroadcastSendingReturn {
             // Read back off the row rather than re-resolved, so this
             // pass and any later resume send identical params.
             params: Array.isArray(r.template_params) ? r.template_params : [],
-            ...(messageParams ? { messageParams } : {}),
+            ...broadcastRecipientParams(payload.template, messageParams),
           }));
 
         if (apiRecipients.length === 0) continue;

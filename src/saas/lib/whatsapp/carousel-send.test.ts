@@ -1,5 +1,5 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
-import { sendCarouselMessage } from './carousel-send';
+import { buildCarouselRequestBody, sendCarouselMessage } from './carousel-send';
 import { MetaApiError } from '@/lib/whatsapp/meta-api';
 import type { CarouselInteractivePayload } from './carousel-interactive';
 
@@ -20,8 +20,8 @@ const validPayload: CarouselInteractivePayload = {
     },
     {
       card_index: 1,
-      header_type: 'video',
-      header_url: 'https://example.com/jacket.mp4',
+      header_type: 'image',
+      header_url: 'https://example.com/jacket.jpg',
       body_text: 'Winter jackets collection',
       button: {
         type: 'cta_url',
@@ -52,7 +52,7 @@ beforeEach(() => {
         status: mockResponseStatus,
         headers: { 'Content-Type': 'application/json' },
       });
-    }),
+    })
   );
 });
 
@@ -69,9 +69,13 @@ describe('sendCarouselMessage', () => {
       payload: validPayload,
     });
 
-    expect(capturedUrl).toBe('https://graph.facebook.com/v21.0/phone_123/messages');
+    expect(capturedUrl).toBe(
+      'https://graph.facebook.com/v21.0/phone_123/messages'
+    );
     expect(capturedInit?.method).toBe('POST');
-    expect((capturedInit?.headers as Record<string, string>)?.['Authorization']).toBe('Bearer token_xyz');
+    expect(
+      (capturedInit?.headers as Record<string, string>)?.['Authorization']
+    ).toBe('Bearer token_xyz');
 
     const parsedBody = JSON.parse(String(capturedInit?.body));
     expect(parsedBody).toMatchObject({
@@ -86,28 +90,34 @@ describe('sendCarouselMessage', () => {
           cards: [
             {
               card_index: 0,
-              header: { type: 'image', image: { link: 'https://example.com/shoes.jpg' } },
+              type: 'cta_url',
+              header: {
+                type: 'image',
+                image: { link: 'https://example.com/shoes.jpg' },
+              },
               body: { text: 'Running shoes on sale' },
               action: {
-                buttons: [
-                  {
-                    type: 'cta_url',
-                    parameters: { display_text: 'Buy Now', url: 'https://example.com/shoes' },
-                  },
-                ],
+                name: 'cta_url',
+                parameters: {
+                  display_text: 'Buy Now',
+                  url: 'https://example.com/shoes',
+                },
               },
             },
             {
               card_index: 1,
-              header: { type: 'video', video: { link: 'https://example.com/jacket.mp4' } },
+              type: 'cta_url',
+              header: {
+                type: 'image',
+                image: { link: 'https://example.com/jacket.jpg' },
+              },
               body: { text: 'Winter jackets collection' },
               action: {
-                buttons: [
-                  {
-                    type: 'cta_url',
-                    parameters: { display_text: 'Buy Now', url: 'https://example.com/jackets' },
-                  },
-                ],
+                name: 'cta_url',
+                parameters: {
+                  display_text: 'Buy Now',
+                  url: 'https://example.com/jackets',
+                },
               },
             },
           ],
@@ -169,12 +179,62 @@ describe('sendCarouselMessage', () => {
     });
 
     const parsedBody = JSON.parse(String(capturedInit?.body));
-    const card0Buttons = parsedBody.interactive.action.cards[0].action.buttons;
-    expect(card0Buttons).toEqual([
-      {
-        type: 'reply',
-        reply: { id: 'btn_opt_1', title: 'Select 1' },
-      },
+    const card0 = parsedBody.interactive.action.cards[0];
+    // Per Meta's doc the card type stays 'cta_url' even for quick-reply cards.
+    expect(card0.type).toBe('cta_url');
+    expect(card0.action).toEqual({
+      buttons: [
+        {
+          type: 'quick_reply',
+          quick_reply: { id: 'btn_opt_1', title: 'Select 1' },
+        },
+      ],
+    });
+  });
+
+  it('omits the optional card body when empty and falls back to a generated quick-reply id', () => {
+    const body = buildCarouselRequestBody('15551234567', {
+      kind: 'carousel',
+      body: 'Pick one',
+      cards: [
+        {
+          card_index: 5,
+          header_type: 'image',
+          header_url: 'https://example.com/a.jpg',
+          body_text: '',
+          button: { type: 'quick_reply', title: 'A' },
+        },
+        {
+          card_index: 9,
+          header_type: 'image',
+          header_url: 'https://example.com/b.jpg',
+          body_text: '   ',
+          button: { type: 'quick_reply', title: 'B' },
+        },
+      ],
+    }) as {
+      interactive: { action: { cards: Array<Record<string, unknown>> } };
+    };
+
+    const cards = body.interactive.action.cards;
+    // contiguous 0-based indices regardless of the stored card_index
+    expect(cards.map((c) => c.card_index)).toEqual([0, 1]);
+    expect(cards[0]).not.toHaveProperty('body');
+    expect(cards[1]).not.toHaveProperty('body');
+    expect(
+      (cards[0].action as { buttons: Array<{ quick_reply: { id: string } }> })
+        .buttons[0].quick_reply.id
+    ).toBe('card_0_btn');
+  });
+
+  it('never sends a top-level interactive header or footer', () => {
+    const body = buildCarouselRequestBody('15551234567', validPayload) as {
+      interactive: Record<string, unknown>;
+    };
+    expect(Object.keys(body.interactive).sort()).toEqual([
+      'action',
+      'body',
+      'type',
     ]);
   });
 
@@ -196,7 +256,7 @@ describe('sendCarouselMessage', () => {
         accessToken: 'token_xyz',
         to: '15551234567',
         payload: validPayload,
-      }),
+      })
     ).rejects.toThrow(MetaApiError);
 
     try {
@@ -206,7 +266,8 @@ describe('sendCarouselMessage', () => {
         to: '15551234567',
         payload: validPayload,
       });
-    } catch (err: any) {
+    } catch (e) {
+      const err = e as MetaApiError;
       expect(err).toBeInstanceOf(MetaApiError);
       expect(err.message).toBe('Invalid interactive payload');
       expect(err.code).toBe(100);
@@ -230,9 +291,33 @@ describe('sendCarouselMessage', () => {
         accessToken: 'token_xyz',
         to: '15551234567',
         payload: invalidPayload,
-      }),
+      })
     ).rejects.toThrow();
 
     expect(capturedUrl).toBe('');
+  });
+});
+
+describe('buildCarouselRequestBody - video cards', () => {
+  it('builds video headers when every card is a video', () => {
+    const body = buildCarouselRequestBody('15551234567', {
+      kind: 'carousel',
+      body: 'Watch',
+      cards: [0, 1].map((i) => ({
+        card_index: i,
+        header_type: 'video' as const,
+        header_url: `https://example.com/v${i}.mp4`,
+        body_text: 'clip',
+        button: {
+          type: 'cta_url' as const,
+          display_text: 'Open',
+          url: 'https://example.com',
+        },
+      })),
+    }) as { interactive: { action: { cards: Array<{ header: unknown }> } } };
+    expect(body.interactive.action.cards[1].header).toEqual({
+      type: 'video',
+      video: { link: 'https://example.com/v1.mp4' },
+    });
   });
 });

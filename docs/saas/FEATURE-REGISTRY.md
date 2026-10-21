@@ -22,7 +22,7 @@
 
 | # | Feature | Status | Our Files | Upstream Equivalent | Doc |
 |---|---------|--------|-----------|---------------------|-----|
-| 01 | Carousel Interactive Messages | ✅ Implemented | `src/saas/lib/whatsapp/carousel-*.ts`, `src/saas/components/carousel-*.tsx` | None yet | [→](./features/01-carousel-messages.md) |
+| 01 | Carousel (templates + interactive messages) | ✅ Implemented (not live-tested) | `src/saas/lib/whatsapp/carousel-*.ts`, `src/saas/lib/templates/`, `src/app/api/saas/templates/carousel/`, `src/saas/components/*carousel*.tsx` | None yet | [→](./features/01-carousel-messages.md) |
 | 02 | Template Media Send (Video + PDF) | ✅ Implemented | `src/saas/components/template-header-media-input.tsx`, `template-picker-with-media.tsx` | None yet | [→](./features/02-template-media-send.md) |
 
 ---

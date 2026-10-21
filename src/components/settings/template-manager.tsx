@@ -57,10 +57,12 @@ import {
   extractVariableIndices,
   TEMPLATE_LIMITS,
 } from '@/lib/whatsapp/template-validators';
-import { SaasHeaderFormat as HeaderFormat, SAAS_HEADER_FORMATS as HEADER_FORMATS } from '@/saas/lib/whatsapp/template-format-extension';
-import { CarouselCardEditor } from '@/saas/components/carousel-card-editor';
+import { CarouselTemplateBadge, SaasCarouselSlot, SaasHideForCarousel, templateCarouselCards, useSaasCarouselFormState, useSaasCarouselTemplateForm, type CarouselTemplateCard } from '@/saas/components/template-manager-carousel';
 
 const CATEGORIES = ['Marketing', 'Utility', 'Authentication'] as const;
+type HeaderFormat = 'none' | 'text' | 'image' | 'video' | 'document';
+const HEADER_FORMATS: HeaderFormat[] = ['none', 'text', 'image', 'video', 'document'];
+
 const categoryColors: Record<string, string> = {
   Marketing: 'bg-purple-600/20 text-purple-400 border-purple-600/30',
   Utility: 'bg-blue-600/20 text-blue-400 border-blue-600/30',
@@ -79,6 +81,7 @@ interface TemplateFormData {
   body_samples: string[];
   footer_text: string;
   buttons: TemplateButton[];
+  carousel_cards: CarouselTemplateCard[];
 }
 
 const emptyForm: TemplateFormData = {
@@ -93,6 +96,7 @@ const emptyForm: TemplateFormData = {
   body_samples: [],
   footer_text: '',
   buttons: [],
+  carousel_cards: [],
 };
 
 const COMMON_LANGUAGE_CODES = [
@@ -141,11 +145,12 @@ export function TemplateManager() {
   const [dialogOpen, setDialogOpen] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [syncing, setSyncing] = useState(false);
-  const [form, setForm] = useState<TemplateFormData>(emptyForm);
+  const [form, setForm] = useSaasCarouselFormState(useState<TemplateFormData>(emptyForm));
   // Non-null when the dialog is editing an existing row — switches the
   // submit handler from POST /submit to PATCH /[id] and changes the
   // dialog title + CTA. Set to the template id to pre-fill from a row.
   const [editingId, setEditingId] = useState<string | null>(null);
+  const saas = useSaasCarouselTemplateForm(form, editingId);
   const [deletingId, setDeletingId] = useState<string | null>(null);
   // Template selected for the confirm-delete dialog. The destructive
   // action goes through this two-step so a slip on the trash icon
@@ -183,7 +188,7 @@ export function TemplateManager() {
       while (next.length < bodyVarCount) next.push('');
       return { ...prev, body_samples: next };
     });
-  }, [bodyVarCount]);
+  }, [bodyVarCount, setForm]);
 
   useEffect(() => {
     if (authLoading) return;
@@ -238,10 +243,6 @@ export function TemplateManager() {
       buttons: form.buttons.length > 0 ? form.buttons : undefined,
       sample_values:
         Object.keys(sample_values).length > 0 ? sample_values : undefined,
-      carousel_cards:
-        form.header_format === 'carousel'
-          ? (form as any).carousel_cards
-          : undefined,
     };
   }
 
@@ -259,6 +260,7 @@ export function TemplateManager() {
       body_samples: template.sample_values?.body ?? [],
       footer_text: template.footer_text ?? '',
       buttons: template.buttons ?? [],
+      carousel_cards: templateCarouselCards(template),
     });
     setDialogOpen(true);
   }
@@ -273,13 +275,14 @@ export function TemplateManager() {
     // AUTHENTICATION is blocked by the persistent banner + disabled
     // submit button; this is a defensive second line of defense.
     if (form.category === 'Authentication') return;
+    if (saas.blockSubmit()) return;
     try {
       setSubmitting(true);
       const isEdit = editingId !== null;
       const url = isEdit
         ? `/api/whatsapp/templates/${editingId}`
         : '/api/whatsapp/templates/submit';
-      const res = await fetch(url, {
+      const res = await saas.fetch(url, {
         method: isEdit ? 'PATCH' : 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(buildSubmitPayload()),
@@ -572,6 +575,7 @@ export function TemplateManager() {
                       >
                         {categoryLabel(template.category)}
                       </Badge>
+                      <CarouselTemplateBadge template={template} />
                       <Badge className={`text-xs border ${status.classes}`}>
                         {status.label}
                       </Badge>
@@ -793,7 +797,7 @@ export function TemplateManager() {
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent className="bg-popover border-border">
-                  {HEADER_FORMATS.map((type) => (
+                  {saas.headerFormats(HEADER_FORMATS).map((type) => (
                     <SelectItem
                       key={type}
                       value={type}
@@ -807,9 +811,7 @@ export function TemplateManager() {
                             ? t('headerImage')
                             : type === 'video'
                               ? t('headerVideo')
-                              : type === 'document'
-                                ? t('headerDocument')
-                                : t('carousel')}
+                              : saas.headerLabel(type, t('headerDocument'))}
                     </SelectItem>
                   ))}
                 </SelectContent>
@@ -843,7 +845,7 @@ export function TemplateManager() {
                 </div>
               )}
 
-              {headerNeedsMedia && (
+              {headerNeedsMedia && !saas.isCarousel && (
                 <div className="space-y-2 mt-2">
                   {headerMediaKind && (
                     <div className="flex items-center gap-2">
@@ -904,10 +906,7 @@ export function TemplateManager() {
                   </p>
                 </div>
               )}
-
-              {form.header_format === 'carousel' && (
-                <CarouselCardEditor cards={(form as any).carousel_cards || []} onChange={(cards) => setForm((prev) => ({ ...prev, carousel_cards: cards } as any))} />
-              )}
+              <SaasCarouselSlot form={form} setForm={setForm} />
             </div>
 
             <div className="space-y-2">
@@ -953,6 +952,7 @@ export function TemplateManager() {
               )}
             </div>
 
+            <SaasHideForCarousel active={saas.isCarousel}>
             <div className="space-y-2">
               <Label className="text-muted-foreground">{t('footer')}</Label>
               <Input
@@ -1099,6 +1099,7 @@ export function TemplateManager() {
                 </div>
               )}
             </div>
+            </SaasHideForCarousel>
           </div>
 
           <DialogFooter className="bg-popover border-border">

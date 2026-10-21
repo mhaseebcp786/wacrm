@@ -23,6 +23,7 @@ import {
   MediaVideoBubble,
 } from "./message-media";
 import { InteractivePreview } from "@/components/interactive/interactive-preview";
+import { CarouselBubble } from "@/saas/components/carousel-bubble";
 import { useTranslations } from "next-intl";
 
 interface MessageBubbleProps {
@@ -247,6 +248,9 @@ function MessageContent({
         </p>
       );
     }
+
+    case "carousel":
+      return <CarouselBubble payload={message.interactive_payload} fallbackText={message.content_text} />;
 
     default:
       return (
