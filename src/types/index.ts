@@ -227,7 +227,9 @@ export type ContentType =
   | 'template'
   /** Customer tapped a reply button or list row on a message we sent. */
   | 'interactive'
-  | 'carousel';
+  | 'carousel'
+  | 'contact'
+  | 'rich_interactive';
 export type MessageStatus = 'sending' | 'sent' | 'delivered' | 'read' | 'failed';
 
 export interface Message {

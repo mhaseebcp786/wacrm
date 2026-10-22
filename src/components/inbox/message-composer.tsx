@@ -55,7 +55,7 @@ import {
 import { validateInteractivePayload } from "@/lib/whatsapp/interactive";
 import { CarouselComposerButton } from "@/saas/components/carousel-composer-button";
 import type { InteractiveMessagePayload, QuickReply } from "@/types";
-import { QuickReplyPicker } from "./quick-reply-picker";
+import { SaasQuickReplyPicker } from "@/saas/components/quick-replies/quick-reply-picker";
 
 /** Media content types an agent can send from the composer. */
 export type ComposerMediaKind = "image" | "video" | "document" | "audio";
@@ -812,10 +812,13 @@ export function MessageComposer({
       </Dialog>
 
       {/* Quick-reply picker. */}
-      <QuickReplyPicker
+      <SaasQuickReplyPicker
         open={quickReplyOpen}
         onOpenChange={setQuickReplyOpen}
         onPick={handlePickQuickReply}
+        conversationId={conversationId}
+        replyToId={replyTo?.id}
+        onSent={onClearReply}
       />
     </div>
   );

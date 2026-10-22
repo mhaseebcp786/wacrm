@@ -13,7 +13,7 @@ import {
 const MB = 1024 * 1024;
 
 describe('MEDIA_LIMITS', () => {
-  it('matches the leminai / Meta limits table', () => {
+  it('matches the reference app / Meta limits table', () => {
     expect(MEDIA_LIMITS.image.maxBytes).toBe(5 * MB);
     expect(MEDIA_LIMITS.image.extensions).toEqual(['jpg', 'jpeg', 'png']);
     expect(MEDIA_LIMITS.video.maxBytes).toBe(16 * MB);
@@ -40,7 +40,7 @@ describe('MEDIA_LIMITS', () => {
     expect(getMediaLimit('image', 'templateHeader')).toBe(MEDIA_LIMITS.image);
   });
 
-  it('describes the badge text like leminai (truncates long lists)', () => {
+  it('describes the badge text like the reference app (truncates long lists)', () => {
     expect(describeMediaLimit('image')).toEqual({
       max: '5 MB',
       formats: 'JPG, JPEG, PNG',

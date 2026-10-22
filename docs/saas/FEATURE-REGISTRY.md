@@ -24,6 +24,8 @@
 |---|---------|--------|-----------|---------------------|-----|
 | 01 | Carousel (templates + interactive messages) | ✅ Implemented (not live-tested) | `src/saas/lib/whatsapp/carousel-*.ts`, `src/saas/lib/templates/`, `src/app/api/saas/templates/carousel/`, `src/saas/components/*carousel*.tsx` | None yet | [→](./features/01-carousel-messages.md) |
 | 02 | Template Media Send (Video + PDF) | ✅ Implemented | `src/saas/components/template-header-media-input.tsx`, `template-picker-with-media.tsx` | None yet | [→](./features/02-template-media-send.md) |
+| 03 | Shared message object (9 types: validate, personalize, build, send) | ✅ Library implemented (not live-tested; no UI/DB yet) | `src/saas/lib/messages/`, `src/saas/lib/whatsapp/meta-request.ts`, `supabase/migrations/90002_saas_contact_message_type.sql` | `src/lib/whatsapp/interactive.ts` (buttons/list), `meta-api.ts` `sendTextMessage` / `sendMediaMessage` / `sendInteractiveButtons` / `sendInteractiveList` | [→](./features/03-message-object.md) |
+| 04 | Suggested replies (all message types) | ✅ Implemented (not live-tested) | `src/saas/lib/quick-replies/`, `src/saas/components/quick-replies/`, `src/app/api/saas/quick-replies/`, migration `90003` | Upstream `quick_replies` (text + buttons/list); we merge with it, do not replace it | [→](./features/04-suggested-replies.md) |
 
 ---
 

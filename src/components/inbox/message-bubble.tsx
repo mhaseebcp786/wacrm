@@ -24,6 +24,7 @@ import {
 } from "./message-media";
 import { InteractivePreview } from "@/components/interactive/interactive-preview";
 import { CarouselBubble } from "@/saas/components/carousel-bubble";
+import { SaasPayloadBubble } from "@/saas/components/payload-bubbles";
 import { useTranslations } from "next-intl";
 
 interface MessageBubbleProps {
@@ -248,6 +249,10 @@ function MessageContent({
         </p>
       );
     }
+
+    case "rich_interactive":
+    case "contact":
+      return <SaasPayloadBubble contentType={message.content_type} payload={message.interactive_payload} fallbackText={message.content_text} />;
 
     case "carousel":
       return <CarouselBubble payload={message.interactive_payload} fallbackText={message.content_text} />;

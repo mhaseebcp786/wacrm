@@ -6,7 +6,7 @@
 //   - isCarouselTemplate(template)        → take the carousel path
 //   - buildCarouselSendComponents(...)    → body + `carousel` component
 //
-// Shape follows Meta's carousel-template send contract (and LeminAi's
+// Shape follows Meta's carousel-template send contract (and the reference app's
 // builder): trailing component
 //   { type:'carousel', cards:[{ card_index, components:[
 //       header{image|video link}, body{vars?}, button{quick_reply|url}… ]}]}

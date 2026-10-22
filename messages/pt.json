@@ -2837,6 +2837,17 @@
       "contentTextRequired": "O texto é obrigatório para respostas rápidas de texto",
       "titleRequired": "O título é obrigatório"
     },
+    "saasQuickReplies": {
+      "nameRequired": "name é obrigatório",
+      "nameTooLong": "name aceita no máximo {max} caracteres",
+      "invalidMessage": "A mensagem não é válida",
+      "notFound": "Resposta sugerida não encontrada",
+      "saveFailed": "Não foi possível salvar a resposta sugerida",
+      "loadFailed": "Não foi possível carregar as respostas sugeridas",
+      "conversationRequired": "conversation_id é obrigatório",
+      "inactive": "Esta resposta sugerida está desativada",
+      "unsupported": "Este tipo de mensagem ainda não pode ser enviado"
+    },
     "broadcast": {
       "alreadyRunning": "Já há um envio em andamento para este disparo. Aguarde a conclusão antes de retomar novamente.",
       "recipientsRequired": "Informe `recipients` (preferencial) ou `phone_numbers` — deve ser uma lista não vazia",
@@ -2907,6 +2918,204 @@
       "submitFailed": "Falha ao enviar o modelo.",
       "metaApiStatus": "Erro da API da Meta: {status}",
       "syncFailed": "Falha ao sincronizar os modelos"
+    }
+  },
+  "SaasQuickReplies": {
+    "title": "Respostas sugeridas",
+    "description": "Guarde mensagens que sua equipe pode enviar com um clique: texto, botões, mídia, carrosséis, localizações e contatos. As respostas de texto podem incluir o nome ou o telefone do contato.",
+    "new": "Nova resposta sugerida",
+    "edit": "Editar resposta sugerida",
+    "delete": "Excluir",
+    "empty": "Ainda não há respostas sugeridas. Crie uma para reutilizá-la nas conversas.",
+    "noMatches": "Nenhuma resposta corresponde à sua busca.",
+    "searchPlaceholder": "Buscar respostas",
+    "loadError": "Não foi possível carregar as respostas sugeridas.",
+    "nameLabel": "Nome",
+    "namePlaceholder": "ex.: Mensagem de boas-vindas",
+    "nameRequired": "Dê um nome à resposta.",
+    "fixIssues": "Corrija os problemas destacados antes de salvar.",
+    "save": "Salvar",
+    "cancel": "Cancelar",
+    "saveError": "Não foi possível salvar a resposta sugerida.",
+    "created": "Resposta sugerida criada.",
+    "updated": "Resposta sugerida atualizada.",
+    "deleteConfirm": "Excluir esta resposta sugerida?",
+    "deleteError": "Não foi possível excluir a resposta sugerida.",
+    "inactive": "Desativada",
+    "activeLabel": "Disponível na caixa de entrada",
+    "legacyNotice": "Esta resposta foi criada no compositor da caixa de entrada. Ao salvá-la aqui, ela passa para este editor.",
+    "typeLabel": "Tipo de mensagem",
+    "types": {
+      "text": "Texto",
+      "interactive": "Interativa",
+      "image": "Imagem",
+      "video": "Vídeo",
+      "audio": "Áudio",
+      "document": "Documento",
+      "carousel": "Carrossel",
+      "location": "Localização",
+      "contact": "Contato"
+    },
+    "interactiveKinds": {
+      "reply": "Botões ou lista",
+      "cta": "Botão de link"
+    },
+    "text": {
+      "label": "Mensagem",
+      "placeholder": "Digite a mensagem…"
+    },
+    "cta": {
+      "body": "Mensagem",
+      "footer": "Rodapé (opcional)",
+      "displayText": "Texto do botão",
+      "url": "Link do botão"
+    },
+    "media": {
+      "imageLabel": "Imagem",
+      "videoLabel": "Vídeo",
+      "documentLabel": "Documento",
+      "audioLabel": "Arquivo de áudio",
+      "audioHint": "AAC, AMR, MP3, M4A ou OGG, até 16 MB. OGG/OPUS toca como mensagem de voz.",
+      "audioFormat": "Formato de áudio não suportado. Use um destes: {formats}.",
+      "audioTooLarge": "O arquivo é grande demais (máximo de {max} MB).",
+      "upload": "Enviar",
+      "uploading": "Enviando…",
+      "uploaded": "Arquivo enviado.",
+      "uploadFailed": "Falha no envio do arquivo.",
+      "filename": "Nome do arquivo (opcional)",
+      "filenameHint": "Exibido ao cliente no documento.",
+      "caption": "Legenda (opcional)",
+      "captionHint": "Exibida abaixo da mídia."
+    },
+    "location": {
+      "latitude": "Latitude",
+      "latitudeHint": "Entre -90 e 90",
+      "longitude": "Longitude",
+      "longitudeHint": "Entre -180 e 180",
+      "name": "Nome do local (opcional)",
+      "address": "Endereço (opcional)"
+    },
+    "contact": {
+      "formattedName": "Nome completo",
+      "firstName": "Nome",
+      "lastName": "Sobrenome",
+      "company": "Empresa",
+      "department": "Departamento",
+      "title": "Cargo",
+      "birthday": "Aniversário",
+      "phones": "Números de telefone",
+      "addPhone": "Adicionar número",
+      "phoneType": "Tipo de número",
+      "phoneTypes": {
+        "CELL": "Celular",
+        "WORK": "Trabalho",
+        "HOME": "Casa",
+        "MAIN": "Principal"
+      },
+      "typeNone": "Sem rótulo",
+      "onWhatsApp": "Está no WhatsApp",
+      "onWhatsAppHint": "O destinatário recebe os botões Enviar mensagem e Salvar contato. Desative para mostrar Convidar para o WhatsApp.",
+      "emails": "E-mails",
+      "addEmail": "Adicionar e-mail",
+      "emailType": "Tipo de e-mail",
+      "emailTypes": {
+        "WORK": "Trabalho",
+        "HOME": "Casa"
+      },
+      "urls": "Sites",
+      "addUrl": "Adicionar site",
+      "removeRow": "Remover",
+      "cardTitle": "Contato {n}",
+      "addCard": "Adicionar outro contato",
+      "removeCard": "Remover este contato",
+      "fromContacts": "Adicionar dos contatos",
+      "maxCards": "Você pode adicionar até {max} contatos.",
+      "contactHint": "Cada contato precisa de um telefone ou de um e-mail.",
+      "waNeedsCountryCode": "Comece o número com + e o código do país (por exemplo +55…) para o botão Enviar mensagem funcionar; sem ele, o destinatário verá Convidar para o WhatsApp."
+    },
+    "preview": {
+      "title": "Pré-visualização",
+      "empty": "Pré-visualização da mensagem",
+      "button": "Botão",
+      "noMedia": "Ainda sem mídia",
+      "audio": "Mensagem de áudio",
+      "document": "Documento",
+      "location": "Localização",
+      "contact": "Contato",
+      "video": "Vídeo"
+    },
+    "issues": {
+      "required": "{field} é obrigatório.",
+      "tooLong": "{field} aceita no máximo {max} caracteres.",
+      "tooFew": "{field}: adicione pelo menos {min}.",
+      "tooMany": "{field}: no máximo {max} permitidos.",
+      "duplicate": "{field} deve ser único.",
+      "outOfRange": "{field} deve estar entre {min} e {max}.",
+      "invalidUrl": "{field} deve ser um link válido.",
+      "invalidMedia": "{field} não está em um formato de arquivo suportado.",
+      "invalidValue": "{field} tem um valor inválido.",
+      "malformed": "Esta resposta não é válida.",
+      "unsupported": {
+        "flow": "Os botões do WhatsApp Flow ainda não são suportados."
+      },
+      "fields": {
+        "text": "O texto",
+        "body": "A mensagem",
+        "caption": "A legenda",
+        "filename": "O nome do arquivo",
+        "link": "O link do arquivo",
+        "url": "O link",
+        "display_text": "O texto do botão",
+        "title": "O título",
+        "description": "A descrição",
+        "footer": "O rodapé",
+        "header": "O cabeçalho",
+        "button": "O botão",
+        "latitude": "A latitude",
+        "longitude": "A longitude",
+        "name": "O nome",
+        "address": "O endereço",
+        "formatted_name": "O nome completo",
+        "phone": "O telefone",
+        "email": "O e-mail",
+        "buttons": "Os botões",
+        "rows": "As linhas",
+        "sections": "As seções",
+        "generic": "Este campo"
+      }
+    },
+    "picker": {
+      "title": "Respostas sugeridas",
+      "empty": "Ainda não há respostas sugeridas. Adicione algumas em Configurações → Respostas rápidas.",
+      "confirmHint": "Esta resposta será enviada ao cliente imediatamente.",
+      "back": "Voltar",
+      "send": "Enviar",
+      "sendFailed": "Não foi possível enviar: {reason}",
+      "networkError": "Erro de rede"
+    },
+    "insertBar": {
+      "label": "Inserir no campo que você está editando:",
+      "name": "Nome",
+      "phone": "Telefone",
+      "noField": "Clique primeiro em um campo de texto.",
+      "noRoom": "Não há espaço para isso neste campo."
+    },
+    "header": {
+      "label": "Cabeçalho (opcional)",
+      "none": "Nenhum",
+      "text": "Texto",
+      "image": "Imagem",
+      "video": "Vídeo",
+      "document": "Documento",
+      "replyMediaLabel": "Cabeçalho de mídia (opcional)",
+      "replyMediaHint": "Substitui o cabeçalho de texto acima. Só mensagens com botões de resposta podem ter cabeçalho de mídia; listas aceitam cabeçalho de texto.",
+      "replyMediaOverrides": "O cabeçalho de texto acima é ignorado enquanto houver um cabeçalho de mídia."
+    },
+    "contactPicker": {
+      "title": "Adicionar dos contatos",
+      "search": "Buscar por nome, telefone ou e-mail",
+      "empty": "Nenhum contato com telefone ou e-mail corresponde.",
+      "loadError": "Não foi possível carregar seus contatos."
     }
   }
 }

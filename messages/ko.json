@@ -2837,6 +2837,17 @@
       "contentTextRequired": "텍스트 빠른 답장에는 내용이 필요합니다",
       "titleRequired": "제목은 필수입니다"
     },
+    "saasQuickReplies": {
+      "nameRequired": "name은(는) 필수입니다",
+      "nameTooLong": "name은(는) 최대 {max}자까지 입력할 수 있습니다",
+      "invalidMessage": "메시지가 올바르지 않습니다",
+      "notFound": "추천 답변을 찾을 수 없습니다",
+      "saveFailed": "추천 답변을 저장하지 못했습니다",
+      "loadFailed": "추천 답변을 불러오지 못했습니다",
+      "conversationRequired": "conversation_id은(는) 필수입니다",
+      "inactive": "이 추천 답변은 꺼져 있습니다",
+      "unsupported": "이 메시지 유형은 아직 보낼 수 없습니다"
+    },
     "broadcast": {
       "alreadyRunning": "이 브로드캐스트의 발송이 이미 진행 중입니다. 완료될 때까지 기다린 후 다시 재개하세요.",
       "recipientsRequired": "`recipients`(권장) 또는 `phone_numbers`를 제공하세요 — 비어 있지 않은 배열이어야 합니다",
@@ -2907,6 +2918,204 @@
       "submitFailed": "템플릿을 제출하지 못했습니다.",
       "metaApiStatus": "Meta API 오류: {status}",
       "syncFailed": "템플릿을 동기화하지 못했습니다"
+    }
+  },
+  "SaasQuickReplies": {
+    "title": "추천 답변",
+    "description": "팀원이 한 번의 클릭으로 보낼 수 있는 메시지를 저장하세요. 텍스트, 버튼, 미디어, 캐러셀, 위치, 연락처를 지원합니다. 텍스트 답변에는 연락처의 이름이나 전화번호를 넣을 수 있습니다.",
+    "new": "새 추천 답변",
+    "edit": "추천 답변 편집",
+    "delete": "삭제",
+    "empty": "아직 추천 답변이 없습니다. 만들어 두면 여러 대화에서 재사용할 수 있습니다.",
+    "noMatches": "검색과 일치하는 답변이 없습니다.",
+    "searchPlaceholder": "답변 검색",
+    "loadError": "추천 답변을 불러오지 못했습니다.",
+    "nameLabel": "이름",
+    "namePlaceholder": "예: 환영 메시지",
+    "nameRequired": "답변 이름을 입력하세요.",
+    "fixIssues": "저장하기 전에 표시된 문제를 해결하세요.",
+    "save": "저장",
+    "cancel": "취소",
+    "saveError": "추천 답변을 저장하지 못했습니다.",
+    "created": "추천 답변을 만들었습니다.",
+    "updated": "추천 답변을 수정했습니다.",
+    "deleteConfirm": "이 추천 답변을 삭제할까요?",
+    "deleteError": "추천 답변을 삭제하지 못했습니다.",
+    "inactive": "꺼짐",
+    "activeLabel": "받은 편지함에서 사용 가능",
+    "legacyNotice": "이 답변은 받은 편지함 작성기에서 만든 것입니다. 여기서 저장하면 이 편집기로 이동합니다.",
+    "typeLabel": "메시지 유형",
+    "types": {
+      "text": "텍스트",
+      "interactive": "인터랙티브",
+      "image": "이미지",
+      "video": "동영상",
+      "audio": "오디오",
+      "document": "문서",
+      "carousel": "캐러셀",
+      "location": "위치",
+      "contact": "연락처"
+    },
+    "interactiveKinds": {
+      "reply": "버튼 또는 목록",
+      "cta": "링크 버튼"
+    },
+    "text": {
+      "label": "메시지",
+      "placeholder": "메시지를 입력하세요…"
+    },
+    "cta": {
+      "body": "메시지",
+      "footer": "푸터 (선택)",
+      "displayText": "버튼 라벨",
+      "url": "버튼 링크"
+    },
+    "media": {
+      "imageLabel": "이미지",
+      "videoLabel": "동영상",
+      "documentLabel": "문서",
+      "audioLabel": "오디오 파일",
+      "audioHint": "AAC, AMR, MP3, M4A 또는 OGG, 최대 16MB. OGG/OPUS는 음성 메시지로 재생됩니다.",
+      "audioFormat": "지원하지 않는 오디오 형식입니다. 다음 중 하나를 사용하세요: {formats}.",
+      "audioTooLarge": "파일이 너무 큽니다 (최대 {max}MB).",
+      "upload": "업로드",
+      "uploading": "업로드 중…",
+      "uploaded": "파일을 업로드했습니다.",
+      "uploadFailed": "업로드하지 못했습니다.",
+      "filename": "파일 이름 (선택)",
+      "filenameHint": "고객에게 문서 이름으로 표시됩니다.",
+      "caption": "캡션 (선택)",
+      "captionHint": "미디어 아래에 표시됩니다."
+    },
+    "location": {
+      "latitude": "위도",
+      "latitudeHint": "-90에서 90 사이",
+      "longitude": "경도",
+      "longitudeHint": "-180에서 180 사이",
+      "name": "장소 이름 (선택)",
+      "address": "주소 (선택)"
+    },
+    "contact": {
+      "formattedName": "전체 이름",
+      "firstName": "이름",
+      "lastName": "성",
+      "company": "회사",
+      "department": "부서",
+      "title": "직함",
+      "birthday": "생일",
+      "phones": "전화번호",
+      "addPhone": "번호 추가",
+      "phoneType": "번호 유형",
+      "phoneTypes": {
+        "CELL": "휴대폰",
+        "WORK": "직장",
+        "HOME": "집",
+        "MAIN": "대표"
+      },
+      "typeNone": "라벨 없음",
+      "onWhatsApp": "WhatsApp 사용 중",
+      "onWhatsAppHint": "받는 사람에게 메시지 보내기와 연락처 저장 버튼이 표시됩니다. 끄면 WhatsApp 초대가 표시됩니다.",
+      "emails": "이메일",
+      "addEmail": "이메일 추가",
+      "emailType": "이메일 유형",
+      "emailTypes": {
+        "WORK": "직장",
+        "HOME": "집"
+      },
+      "urls": "웹사이트",
+      "addUrl": "웹사이트 추가",
+      "removeRow": "삭제",
+      "cardTitle": "연락처 {n}",
+      "addCard": "연락처 더 추가",
+      "removeCard": "이 연락처 삭제",
+      "fromContacts": "연락처에서 추가",
+      "maxCards": "연락처는 최대 {max}개까지 추가할 수 있습니다.",
+      "contactHint": "각 연락처에는 전화번호 또는 이메일이 필요합니다.",
+      "waNeedsCountryCode": "메시지 보내기 버튼이 작동하려면 번호를 +와 국가 코드(예: +82…)로 시작하세요. 그렇지 않으면 받는 사람에게 WhatsApp 초대가 표시됩니다."
+    },
+    "preview": {
+      "title": "미리보기",
+      "empty": "메시지 미리보기",
+      "button": "버튼",
+      "noMedia": "아직 미디어가 없습니다",
+      "audio": "오디오 메시지",
+      "document": "문서",
+      "location": "위치",
+      "contact": "연락처",
+      "video": "동영상"
+    },
+    "issues": {
+      "required": "{field}은(는) 필수입니다.",
+      "tooLong": "{field}은(는) 최대 {max}자까지 입력할 수 있습니다.",
+      "tooFew": "{field}: 최소 {min}개를 추가하세요.",
+      "tooMany": "{field}: 최대 {max}개까지 허용됩니다.",
+      "duplicate": "{field}은(는) 고유해야 합니다.",
+      "outOfRange": "{field}은(는) {min}에서 {max} 사이여야 합니다.",
+      "invalidUrl": "{field}은(는) 올바른 링크여야 합니다.",
+      "invalidMedia": "{field}은(는) 지원하지 않는 파일 형식입니다.",
+      "invalidValue": "{field}의 값이 올바르지 않습니다.",
+      "malformed": "이 답변은 올바르지 않습니다.",
+      "unsupported": {
+        "flow": "WhatsApp Flow 버튼은 아직 지원하지 않습니다."
+      },
+      "fields": {
+        "text": "텍스트",
+        "body": "메시지",
+        "caption": "캡션",
+        "filename": "파일 이름",
+        "link": "파일 링크",
+        "url": "링크",
+        "display_text": "버튼 라벨",
+        "title": "제목",
+        "description": "설명",
+        "footer": "푸터",
+        "header": "헤더",
+        "button": "버튼",
+        "latitude": "위도",
+        "longitude": "경도",
+        "name": "이름",
+        "address": "주소",
+        "formatted_name": "전체 이름",
+        "phone": "전화번호",
+        "email": "이메일",
+        "buttons": "버튼",
+        "rows": "행",
+        "sections": "섹션",
+        "generic": "이 항목"
+      }
+    },
+    "picker": {
+      "title": "추천 답변",
+      "empty": "아직 추천 답변이 없습니다. 설정 → 빠른 답장에서 추가하세요.",
+      "confirmHint": "이 답변은 고객에게 바로 전송됩니다.",
+      "back": "뒤로",
+      "send": "보내기",
+      "sendFailed": "보내지 못했습니다: {reason}",
+      "networkError": "네트워크 오류"
+    },
+    "insertBar": {
+      "label": "편집 중인 입력란에 삽입:",
+      "name": "이름",
+      "phone": "전화번호",
+      "noField": "먼저 텍스트 입력란을 클릭하세요.",
+      "noRoom": "이 입력란에는 넣을 공간이 없습니다."
+    },
+    "header": {
+      "label": "헤더 (선택)",
+      "none": "없음",
+      "text": "텍스트",
+      "image": "이미지",
+      "video": "동영상",
+      "document": "문서",
+      "replyMediaLabel": "미디어 헤더 (선택)",
+      "replyMediaHint": "위의 텍스트 헤더를 대체합니다. 미디어 헤더는 답장 버튼 메시지에서만 사용할 수 있으며, 목록은 텍스트 헤더만 지원합니다.",
+      "replyMediaOverrides": "미디어 헤더가 설정되어 있으면 위의 텍스트 헤더는 무시됩니다."
+    },
+    "contactPicker": {
+      "title": "연락처에서 추가",
+      "search": "이름, 전화번호 또는 이메일로 검색",
+      "empty": "전화번호나 이메일이 있는 일치하는 연락처가 없습니다.",
+      "loadError": "연락처를 불러오지 못했습니다."
     }
   }
 }

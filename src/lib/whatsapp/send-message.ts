@@ -29,7 +29,7 @@ import {
   sendInteractiveList,
   type MediaKind,
 } from '@/lib/whatsapp/meta-api';
-import { validateSaasMessageType, dispatchSaasMessage, SAAS_MESSAGE_TYPES } from '@/saas/lib/whatsapp/send-message-extensions';
+import { validateSaasMessageType, dispatchSaasMessage, storesSaasPayload, SAAS_MESSAGE_TYPES } from '@/saas/lib/whatsapp/send-message-extensions';
 import {
   validateInteractivePayload,
   interactivePayloadPreviewText,
@@ -490,7 +490,7 @@ export async function sendMessageToConversation(
       media_url: mediaUrl || null,
       template_name: templateName || null,
       interactive_payload:
-        messageType === 'interactive' || messageType === 'carousel'
+        messageType === 'interactive' || messageType === 'carousel' || storesSaasPayload(messageType)
           ? interactivePayload
           : null,
       message_id: waMessageId,

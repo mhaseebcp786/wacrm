@@ -1,14 +1,14 @@
 # Feature 01 — Carousel (templates + interactive messages)
 
-**Status:** ✅ Implemented (reworked 2026-10-21 to match LeminAi behaviour and Meta's schema)
+**Status:** ✅ Implemented (reworked 2026-10-21 to match the reference app behaviour and Meta's schema)
 **Branch:** `saas-main`
 
 > [!WARNING]
 > Verified by unit/service tests, typecheck, lint and `next build` only. **No live WhatsApp
 > send has been made.** Two Meta details remain unproven: quick-reply interactive cards use
-> `type: "cta_url"` (matches Meta's current doc, differs from LeminAi's `"button"`), and
+> `type: "cta_url"` (matches Meta's current doc, differs from the reference app's `"button"`), and
 > carousel-template cards are sent with a media `link` (Meta's doc example uses a media `id`;
-> LeminAi's own published API example also sends `link`, so it is the common production choice).
+> The reference app's own published API example also sends `link`, so it is the common production choice).
 > Smoke-test one send of each before relying on it.
 
 ---
@@ -81,14 +81,14 @@ migration that re-creates `messages_content_type_check` or `message_templates_he
 would drop `carousel` — CI (`verify-schema.sql`) now fails if that happens; re-assert with a new
 `9000N` migration.
 
-## Behaviour vs LeminAi (reverse-engineered from its public client bundle)
+## Behaviour vs the reference app (reverse-engineered from its public client bundle)
 Matches: 2–10 cards, ≤ 2 buttons/card, 160-char card body, Marketing-only, Image/Video per
 card, Quick Reply/URL/Call buttons, add-at-end/remove-when->2, arrow+dot preview, per-card media
-and variables at send time, per-card real media type (LeminAi's campaign flow validates every
+and variables at send time, per-card real media type (the reference app's campaign flow validates every
 card as an image — a bug we did not copy). Differs deliberately: Meta-required body and card
 consistency are enforced client- and server-side; media can also be pasted as an https URL.
 
-### Confirmed from LeminAi's official YouTube demo (frames + transcript, 2026-10-21)
+### Confirmed from the reference app's official YouTube demo (frames + transcript, 2026-10-21)
 Free-form (24-hour window) carousels are authored in **Suggested Replies → Message Type**
 (Text, Interactive, Image, Video, Audio, Document, **Carousel**, Location, Contact, Catalog) and
 sent from the inbox/chatbots/autoresponders ("carousel in service messages" is a marketed
@@ -100,7 +100,7 @@ per card an Image|Video toggle, file chooser, optional card body (max 160) and b
 Our Inbox composer button covers the same fields; **not built:** saving a carousel as a
 reusable Suggested Reply / using it in autoresponders and chatbots.
 
-### Confirmed from LeminAi's in-app API docs (trial account, 2026-10-21)
+### Confirmed from the reference app's in-app API docs (trial account, 2026-10-21)
 - Template **send** with a carousel: `components` = body params + `{type:"carousel", cards:[{card_index,
   components:[header{image|video link}, body params, button sub_type url index 0 …]}]}` — identical
   in shape to `carousel-template-send.ts`.
@@ -108,10 +108,10 @@ reusable Suggested Reply / using it in autoresponders and chatbots.
   (max 10); public media URLs are downloaded and re-uploaded to Meta server-side (same as our
   `ensureCardHandles`); duplicate name+language → HTTP 409 `duplicate_template`; unreachable media →
   HTTP 422 `media_upload_failed`. Video is MP4 ≤ 16 MB, image JPEG/PNG.
-- LeminAi's API-sent **service messages** support text/image/video/audio/document and interactive
+- The reference app's API-sent **service messages** support text/image/video/audio/document and interactive
   *list* only — no carousel — even though its dashboard composer can send carousels.
 
-### Confirmed live on a LeminAi trial account (drafts only, no WhatsApp number, 2026-10-21)
+### Confirmed live on a reference-app trial account (drafts only, no WhatsApp number, 2026-10-21)
 Created three **draft** templates through their real UI (Save Template, not Submit) using Invicto
 Associates LLP product media, and captured `POST /api/templates` → 201 `{"message":"Template saved as draft."}`:
 - **Carousel** (2 image cards, URL buttons, top body with a variable): the backend built

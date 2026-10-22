@@ -1,14 +1,11 @@
-import { isBusinessScopedUserId } from '@/lib/whatsapp/wa-identity';
-import { MetaApiError, type MetaSendResult } from '@/lib/whatsapp/meta-api';
+import { type MetaSendResult } from '@/lib/whatsapp/meta-api';
 import {
   type CarouselInteractivePayload,
   validateCarouselInteractivePayload,
 } from './carousel-interactive';
+import { postMetaMessage, recipientFields } from './meta-request';
 
 export { validateCarouselInteractivePayload };
-
-const META_API_VERSION = 'v21.0';
-const META_API_BASE = `https://graph.facebook.com/${META_API_VERSION}`;
 
 export interface SendCarouselMessageArgs {
   phoneNumberId: string;
@@ -16,25 +13,6 @@ export interface SendCarouselMessageArgs {
   to: string;
   payload: CarouselInteractivePayload;
   contextMessageId?: string;
-}
-
-interface MetaErrorResponse {
-  error?: {
-    message?: string;
-    code?: number;
-    error_subcode?: number;
-    type?: string;
-    fbtrace_id?: string;
-    error_data?: { messaging_product?: string; details?: string };
-  };
-}
-
-// Local copy: upstream `throwMetaError` / `recipientFields` are not exported
-// from meta-api.ts and the 99/1 rule forbids touching that file.
-function recipientFields(to: string): Record<string, unknown> {
-  return isBusinessScopedUserId(to)
-    ? { recipient: to.trim() }
-    : { recipient_type: 'individual', to };
 }
 
 /**
@@ -132,40 +110,5 @@ export async function sendCarouselMessage(
 
   const body = buildCarouselRequestBody(to, payload, contextMessageId);
 
-  const url = `${META_API_BASE}/${phoneNumberId}/messages`;
-  const response = await fetch(url, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      Authorization: `Bearer ${accessToken}`,
-    },
-    body: JSON.stringify(body),
-  });
-
-  if (!response.ok) {
-    let message = `Meta API error: ${response.status}`;
-    let envelope: MetaErrorResponse['error'] | undefined;
-    try {
-      const data = (await response.json()) as MetaErrorResponse;
-      envelope = data.error;
-      if (envelope?.message) message = envelope.message;
-    } catch {
-      // response body wasn't JSON — keep fallback message
-    }
-
-    throw new MetaApiError(message, {
-      code: typeof envelope?.code === 'number' ? envelope.code : null,
-      subcode:
-        typeof envelope?.error_subcode === 'number'
-          ? envelope.error_subcode
-          : null,
-      type: envelope?.type ?? null,
-      fbtraceId: envelope?.fbtrace_id ?? null,
-      httpStatus: response.status,
-      details: envelope?.error_data?.details ?? null,
-    });
-  }
-
-  const data = (await response.json()) as { messages: [{ id: string }] };
-  return { messageId: data.messages[0].id };
+  return postMetaMessage({ phoneNumberId, accessToken, body });
 }

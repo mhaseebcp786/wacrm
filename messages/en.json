@@ -2837,6 +2837,17 @@
       "contentTextRequired": "content_text is required for text quick replies",
       "titleRequired": "title is required"
     },
+    "saasQuickReplies": {
+      "nameRequired": "name is required",
+      "nameTooLong": "name must be at most {max} characters",
+      "invalidMessage": "The message is not valid",
+      "notFound": "Suggested reply not found",
+      "saveFailed": "Couldn't save the suggested reply",
+      "loadFailed": "Couldn't load the suggested replies",
+      "conversationRequired": "conversation_id is required",
+      "inactive": "This suggested reply is switched off",
+      "unsupported": "This message type can't be sent yet"
+    },
     "broadcast": {
       "alreadyRunning": "A delivery pass is already running for this broadcast. Wait for it to finish before resuming again.",
       "recipientsRequired": "Provide either `recipients` (preferred) or `phone_numbers` — must be a non-empty array",
@@ -2907,6 +2918,204 @@
       "submitFailed": "Failed to submit template.",
       "metaApiStatus": "Meta API error: {status}",
       "syncFailed": "Failed to sync templates"
+    }
+  },
+  "SaasQuickReplies": {
+    "title": "Suggested replies",
+    "description": "Save messages your team can send in one click: text, buttons, media, carousels, locations and contacts. Text replies can include the contact's name or phone number.",
+    "new": "New suggested reply",
+    "edit": "Edit suggested reply",
+    "delete": "Delete",
+    "empty": "No suggested replies yet. Create one to reuse it across conversations.",
+    "noMatches": "No replies match your search.",
+    "searchPlaceholder": "Search replies",
+    "loadError": "Couldn't load the suggested replies.",
+    "nameLabel": "Name",
+    "namePlaceholder": "e.g. Welcome message",
+    "nameRequired": "Give the reply a name.",
+    "fixIssues": "Please fix the highlighted problems before saving.",
+    "save": "Save",
+    "cancel": "Cancel",
+    "saveError": "Couldn't save the suggested reply.",
+    "created": "Suggested reply created.",
+    "updated": "Suggested reply updated.",
+    "deleteConfirm": "Delete this suggested reply?",
+    "deleteError": "Couldn't delete the suggested reply.",
+    "inactive": "Off",
+    "activeLabel": "Available in the inbox",
+    "legacyNotice": "This reply was created in the inbox composer. Saving it here moves it to this editor.",
+    "typeLabel": "Message type",
+    "types": {
+      "text": "Text",
+      "interactive": "Interactive",
+      "image": "Image",
+      "video": "Video",
+      "audio": "Audio",
+      "document": "Document",
+      "carousel": "Carousel",
+      "location": "Location",
+      "contact": "Contact"
+    },
+    "interactiveKinds": {
+      "reply": "Buttons or list",
+      "cta": "Link button"
+    },
+    "text": {
+      "label": "Message",
+      "placeholder": "Type the message…"
+    },
+    "cta": {
+      "body": "Message",
+      "footer": "Footer (optional)",
+      "displayText": "Button label",
+      "url": "Button link"
+    },
+    "media": {
+      "imageLabel": "Image",
+      "videoLabel": "Video",
+      "documentLabel": "Document",
+      "audioLabel": "Audio file",
+      "audioHint": "AAC, AMR, MP3, M4A or OGG, up to 16 MB. OGG/OPUS plays as a voice note.",
+      "audioFormat": "Unsupported audio format. Use one of: {formats}.",
+      "audioTooLarge": "The file is too large (maximum {max} MB).",
+      "upload": "Upload",
+      "uploading": "Uploading…",
+      "uploaded": "File uploaded.",
+      "uploadFailed": "Upload failed.",
+      "filename": "File name (optional)",
+      "filenameHint": "Shown to the customer on the document.",
+      "caption": "Caption (optional)",
+      "captionHint": "Shown under the media."
+    },
+    "location": {
+      "latitude": "Latitude",
+      "latitudeHint": "Between -90 and 90",
+      "longitude": "Longitude",
+      "longitudeHint": "Between -180 and 180",
+      "name": "Place name (optional)",
+      "address": "Address (optional)"
+    },
+    "contact": {
+      "formattedName": "Full name",
+      "firstName": "First name",
+      "lastName": "Last name",
+      "company": "Company",
+      "department": "Department",
+      "title": "Job title",
+      "birthday": "Birthday",
+      "phones": "Phone numbers",
+      "addPhone": "Add number",
+      "phoneType": "Number type",
+      "phoneTypes": {
+        "CELL": "Mobile",
+        "WORK": "Work",
+        "HOME": "Home",
+        "MAIN": "Main"
+      },
+      "typeNone": "No label",
+      "onWhatsApp": "On WhatsApp",
+      "onWhatsAppHint": "The recipient gets Message and Save contact buttons. Turn off to show Invite to WhatsApp.",
+      "emails": "Emails",
+      "addEmail": "Add email",
+      "emailType": "Email type",
+      "emailTypes": {
+        "WORK": "Work",
+        "HOME": "Home"
+      },
+      "urls": "Websites",
+      "addUrl": "Add website",
+      "removeRow": "Remove",
+      "cardTitle": "Contact {n}",
+      "addCard": "Add another contact",
+      "removeCard": "Remove this contact",
+      "fromContacts": "Add from contacts",
+      "maxCards": "You can add up to {max} contacts.",
+      "contactHint": "Each contact needs a phone number or an email.",
+      "waNeedsCountryCode": "Start the number with + and the country code (for example +91…) so the Message button works; without it the recipient sees Invite to WhatsApp."
+    },
+    "preview": {
+      "title": "Preview",
+      "empty": "Message preview",
+      "button": "Button",
+      "noMedia": "No media yet",
+      "audio": "Audio message",
+      "document": "Document",
+      "location": "Location",
+      "contact": "Contact",
+      "video": "Video"
+    },
+    "issues": {
+      "required": "{field} is required.",
+      "tooLong": "{field} must be at most {max} characters.",
+      "tooFew": "{field}: add at least {min}.",
+      "tooMany": "{field}: at most {max} allowed.",
+      "duplicate": "{field} must be unique.",
+      "outOfRange": "{field} must be between {min} and {max}.",
+      "invalidUrl": "{field} must be a valid link.",
+      "invalidMedia": "{field} is not a supported file format.",
+      "invalidValue": "{field} has an invalid value.",
+      "malformed": "This reply is not valid.",
+      "unsupported": {
+        "flow": "WhatsApp Flow buttons are not supported yet."
+      },
+      "fields": {
+        "text": "Text",
+        "body": "Message",
+        "caption": "Caption",
+        "filename": "File name",
+        "link": "File link",
+        "url": "Link",
+        "display_text": "Button label",
+        "title": "Title",
+        "description": "Description",
+        "footer": "Footer",
+        "header": "Header",
+        "button": "Button",
+        "latitude": "Latitude",
+        "longitude": "Longitude",
+        "name": "Name",
+        "address": "Address",
+        "formatted_name": "Full name",
+        "phone": "Phone",
+        "email": "Email",
+        "buttons": "Buttons",
+        "rows": "Rows",
+        "sections": "Sections",
+        "generic": "This field"
+      }
+    },
+    "picker": {
+      "title": "Suggested replies",
+      "empty": "No suggested replies yet. Add some in Settings → Quick replies.",
+      "confirmHint": "This reply will be sent to the customer right away.",
+      "back": "Back",
+      "send": "Send",
+      "sendFailed": "Couldn't send: {reason}",
+      "networkError": "Network error"
+    },
+    "insertBar": {
+      "label": "Insert into the field you are editing:",
+      "name": "Name",
+      "phone": "Phone",
+      "noField": "Click into a text field first.",
+      "noRoom": "There is no room for that in this field."
+    },
+    "header": {
+      "label": "Header (optional)",
+      "none": "None",
+      "text": "Text",
+      "image": "Image",
+      "video": "Video",
+      "document": "Document",
+      "replyMediaLabel": "Media header (optional)",
+      "replyMediaHint": "Replaces the text header above. Only reply-button messages can have a media header; lists take a text header.",
+      "replyMediaOverrides": "The text header above is ignored while a media header is set."
+    },
+    "contactPicker": {
+      "title": "Add from contacts",
+      "search": "Search by name, phone or email",
+      "empty": "No matching contacts with a phone number or email.",
+      "loadError": "Couldn't load your contacts."
     }
   }
 }

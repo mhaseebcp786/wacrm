@@ -159,6 +159,42 @@ BEGIN
   ) THEN
     RAISE EXCEPTION 'message_templates.carousel_cards is missing — migration 90001 did not apply';
   END IF;
+
+  -- ===== SaaS fork assertions (migration 90002 — contact message type) =====
+  -- 90002 re-creates messages_content_type_check with 'contact' added; it
+  -- must keep 'carousel' too, and a later migration re-creating the CHECK
+  -- by name would silently drop 'contact'.
+  IF COALESCE(pg_get_constraintdef(
+       (SELECT oid FROM pg_constraint
+        WHERE conname = 'messages_content_type_check'
+          AND conrelid = 'public.messages'::regclass)
+     ), '') NOT LIKE '%contact%' THEN
+    RAISE EXCEPTION
+      'messages_content_type_check does not allow contact — migration 90002 did not apply or was overwritten';
+  END IF;
+  -- ===== SaaS fork assertions (migration 90003 — suggested replies) =====
+  IF to_regclass('public.saas_quick_replies') IS NULL THEN
+    RAISE EXCEPTION 'public.saas_quick_replies is missing — migration 90003 did not apply';
+  END IF;
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_class
+    WHERE oid = 'public.saas_quick_replies'::regclass AND relrowsecurity
+  ) THEN
+    RAISE EXCEPTION 'saas_quick_replies has row level security disabled';
+  END IF;
+  IF COALESCE(pg_get_constraintdef(
+       (SELECT oid FROM pg_constraint
+        WHERE conname = 'messages_content_type_check'
+          AND conrelid = 'public.messages'::regclass)
+     ), '') NOT LIKE '%rich_interactive%'
+     OR COALESCE(pg_get_constraintdef(
+       (SELECT oid FROM pg_constraint
+        WHERE conname = 'messages_content_type_check'
+          AND conrelid = 'public.messages'::regclass)
+     ), '') NOT LIKE '%carousel%' THEN
+    RAISE EXCEPTION
+      'messages_content_type_check does not allow rich_interactive and carousel — migration 90003 did not apply or was overwritten';
+  END IF;
   -- ===== end SaaS fork assertions =====
 
   RAISE NOTICE 'schema verification passed';

@@ -9,9 +9,9 @@
 // Every card must use the same header format and the same button
 // layout (count + types, in order). Marketing category only.
 //
-// Behavior mirrors LeminAi's builder (2-10 cards, <=2 buttons/card,
+// Behavior mirrors the reference app's builder (2-10 cards, <=2 buttons/card,
 // 160-char card body, MARKETING-only) while enforcing the Meta
-// consistency rules LeminAi leaves to Meta's review.
+// consistency rules the reference app leaves to Meta's review.
 // ============================================================
 
 import type { TemplatePayload } from '@/lib/whatsapp/template-validators';

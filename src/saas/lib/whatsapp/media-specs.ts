@@ -1,6 +1,6 @@
 /**
  * Media limits + validator for template headers, carousel cards and
- * send-time media (leminai-style "Meta limit" table).
+ * send-time media (reference-style "Meta limit" table).
  *
  * Reuse policy: MIME lists and Meta's per-type ceilings come from the
  * upstream `MEDIA_HEADER_SPECS` (they already match Meta's table: image
@@ -118,7 +118,7 @@ export function formatExtensions(limit: MediaLimit): string {
 }
 
 /**
- * leminai's "Meta limit" badge shows at most 3 extensions then "etc.".
+ * the reference app's "Meta limit" badge shows at most 3 extensions then "etc.".
  * Returns `{ max, formats }` for `Meta limit: Max {max} ({formats})`.
  */
 export function describeMediaLimit(
