@@ -1812,6 +1812,7 @@
       "whatsapp": "WhatsApp",
       "templates": "Modelos",
       "quick-replies": "Respostas rápidas",
+      "welcome-away": "Boas-vindas e ausência",
       "fields": "Campos e tags",
       "deals": "Negócios e moeda",
       "members": "Membros da equipe",
@@ -2848,6 +2849,12 @@
       "inactive": "Esta resposta sugerida está desativada",
       "unsupported": "Este tipo de mensagem ainda não pode ser enviado"
     },
+    "saasAutoresponder": {
+      "notFound": "Mensagem de boas-vindas ou ausência não encontrada",
+      "saveFailed": "Não foi possível salvar a mensagem",
+      "loadFailed": "Não foi possível carregar as mensagens",
+      "invalid": "Não é possível salvar a mensagem. Verifique os problemas no formulário."
+    },
     "broadcast": {
       "alreadyRunning": "Já há um envio em andamento para este disparo. Aguarde a conclusão antes de retomar novamente.",
       "recipientsRequired": "Informe `recipients` (preferencial) ou `phone_numbers` — deve ser uma lista não vazia",
@@ -3117,5 +3124,95 @@
       "empty": "Nenhum contato com telefone ou e-mail corresponde.",
       "loadError": "Não foi possível carregar seus contatos."
     }
+  },
+  "SaasAutoresponder": {
+    "title": "Mensagens de boas-vindas e ausência",
+    "description": "Envie uma mensagem automaticamente quando um cliente escrever para você: uma saudação, um aviso fora do expediente ou uma mensagem de boas-vindas de volta. Não precisa de atendente. Para respostas por palavra-chave ou regras de várias etapas, use Automações.",
+    "new": "Nova mensagem automática",
+    "dialogNew": "Nova mensagem de boas-vindas ou ausência",
+    "dialogEdit": "Editar mensagem",
+    "edit": "Editar",
+    "delete": "Excluir",
+    "empty": "Ainda não há mensagens automáticas. Crie uma para cumprimentar os clientes quando escreverem.",
+    "loadError": "Não foi possível carregar as mensagens",
+    "saveError": "Não foi possível salvar a mensagem",
+    "created": "Mensagem criada",
+    "updated": "Mensagem atualizada",
+    "deleteConfirm": "Excluir esta mensagem automática? Os clientes deixarão de recebê-la.",
+    "deleteError": "Não foi possível excluir a mensagem",
+    "activeLabel": "Ativada",
+    "inactive": "Desativada",
+    "cancel": "Cancelar",
+    "save": "Salvar",
+    "fixIssues": "Corrija primeiro os problemas destacados",
+    "nameLabel": "Nome",
+    "namePlaceholder": "ex.: Boas-vindas, Fora do expediente",
+    "whenTitle": "Quando deve ser enviada?",
+    "sendWhen": {
+      "first_message": {
+        "title": "Na primeira mensagem de um cliente",
+        "description": "Enviada uma única vez, na primeira vez que alguém escreve para você. Ideal para uma mensagem de boas-vindas."
+      },
+      "after_inactivity": {
+        "title": "Boas-vindas após um tempo sem escrever",
+        "description": "Enviada na primeira mensagem e de novo quando um cliente escreve depois de um longo silêncio. Ideal para “bem-vindo de volta”."
+      },
+      "every_n_days": {
+        "title": "Uma vez a cada alguns dias, quando escreverem",
+        "description": "Enviada quando um cliente escreve, mas não é enviada de novo ao mesmo cliente até passarem os dias que você escolher. Ideal para um aviso de ausência ou fora do expediente."
+      }
+    },
+    "intervalOption": "{count} {count, plural, =1 {dia} other {dias}}",
+    "scheduleToggle": "Somente em certos dias e horários",
+    "scheduleToggleHint": "Deixe desativado para enviar a qualquer hora. Ative para uma mensagem de ausência (por exemplo, toda noite) ou para o horário de atendimento.",
+    "daysLabel": "Dias",
+    "days": {
+      "1": "Seg",
+      "2": "Ter",
+      "3": "Qua",
+      "4": "Qui",
+      "5": "Sex",
+      "6": "Sáb",
+      "7": "Dom"
+    },
+    "timeFromLabel": "De",
+    "timeToLabel": "Até",
+    "timezoneLabel": "Fuso horário",
+    "scheduleHint": "Os dois horários estão incluídos. Se “Até” for anterior a “De”, o período passa da meia-noite: 18:00 às 09:00 cobre a noite e a manhã seguinte, e o dia marcado é o dia em que ele começa.",
+    "messageTitle": "Mensagem",
+    "messageHint": "Enviada logo depois que o cliente escreve, dentro da janela de resposta de 24 horas do WhatsApp.",
+    "previewTitle": "Pré-visualização",
+    "summary": {
+      "first_message": "Somente a primeira mensagem",
+      "after_inactivity": "Primeira mensagem e após {count} {count, plural, =1 {dia} other {dias}} sem escrever",
+      "everyDay": "Todos os dias",
+      "schedule": "{days}, {from}–{to} ({timezone})",
+      "every_n_days": "No máximo uma vez a cada {count} {count, plural, =1 {dia} other {dias}}"
+    },
+    "priorityNote": "Apenas uma mensagem é enviada para cada mensagem do cliente. Se várias servirem, vai primeiro a limitada a certos horários, depois as de “primeira mensagem” e por fim a mais antiga.",
+    "errors": {
+      "nameRequired": "Informe um nome.",
+      "nameTooLong": "O nome pode ter no máximo {max} caracteres.",
+      "sendWhenInvalid": "Escolha quando enviar.",
+      "intervalInvalid": "Escolha um período entre {min} e {max} dias.",
+      "daysRequired": "Escolha pelo menos um dia.",
+      "daysInvalid": "Escolha dias válidos.",
+      "timeInvalid": "Informe um horário de início e um de fim válidos.",
+      "timesEqual": "Os horários de início e fim devem ser diferentes.",
+      "timezoneInvalid": "Escolha um fuso horário válido.",
+      "invalidMessage": "Corrija a mensagem."
+    },
+    "intervalLabel": {
+      "after_inactivity": "Tempo sem escrever",
+      "every_n_days": "No máximo uma vez a cada"
+    },
+    "intervalHint": {
+      "after_inactivity": "Quanto tempo o cliente precisa ficar sem escrever para a mensagem ser enviada novamente.",
+      "every_n_days": "O mesmo cliente não receberá esta mensagem de novo até passarem estes dias."
+    },
+    "toggleAria": "Ativar ou desativar “{name}”",
+    "editAria": "Editar “{name}”",
+    "deleteAria": "Excluir “{name}”",
+    "retry": "Tentar novamente"
   }
 }

@@ -1812,6 +1812,7 @@
       "whatsapp": "WhatsApp",
       "templates": "Plantillas",
       "quick-replies": "Respuestas rápidas",
+      "welcome-away": "Bienvenida y ausencia",
       "fields": "Campos y etiquetas",
       "deals": "Negocios y moneda",
       "members": "Miembros del equipo",
@@ -2848,6 +2849,12 @@
       "inactive": "Esta respuesta sugerida está desactivada",
       "unsupported": "Este tipo de mensaje aún no se puede enviar"
     },
+    "saasAutoresponder": {
+      "notFound": "No se encontró el mensaje de bienvenida o ausencia",
+      "saveFailed": "No se pudo guardar el mensaje",
+      "loadFailed": "No se pudieron cargar los mensajes",
+      "invalid": "No se puede guardar el mensaje. Revisa los problemas del formulario."
+    },
     "broadcast": {
       "alreadyRunning": "Ya hay un envío en curso para esta difusión. Espera a que termine antes de reanudar de nuevo.",
       "recipientsRequired": "Proporciona `recipients` (preferido) o `phone_numbers`; debe ser una lista no vacía",
@@ -3117,5 +3124,95 @@
       "empty": "No hay contactos con teléfono o correo que coincidan.",
       "loadError": "No se pudieron cargar tus contactos."
     }
+  },
+  "SaasAutoresponder": {
+    "title": "Mensajes de bienvenida y ausencia",
+    "description": "Envía un mensaje automáticamente cuando un cliente te escribe: un saludo, un aviso fuera de horario o una bienvenida de regreso. No hace falta ningún agente. Para respuestas por palabra clave o reglas de varios pasos, usa Automatizaciones.",
+    "new": "Nuevo mensaje automático",
+    "dialogNew": "Nuevo mensaje de bienvenida o ausencia",
+    "dialogEdit": "Editar mensaje",
+    "edit": "Editar",
+    "delete": "Eliminar",
+    "empty": "Aún no hay mensajes automáticos. Crea uno para saludar a los clientes cuando te escriban.",
+    "loadError": "No se pudieron cargar los mensajes",
+    "saveError": "No se pudo guardar el mensaje",
+    "created": "Mensaje creado",
+    "updated": "Mensaje actualizado",
+    "deleteConfirm": "¿Eliminar este mensaje automático? Los clientes dejarán de recibirlo.",
+    "deleteError": "No se pudo eliminar el mensaje",
+    "activeLabel": "Activado",
+    "inactive": "Desactivado",
+    "cancel": "Cancelar",
+    "save": "Guardar",
+    "fixIssues": "Corrige primero los problemas marcados",
+    "nameLabel": "Nombre",
+    "namePlaceholder": "p. ej. Bienvenida, Fuera de horario",
+    "whenTitle": "¿Cuándo debe enviarse?",
+    "sendWhen": {
+      "first_message": {
+        "title": "En el primer mensaje de un cliente",
+        "description": "Se envía una sola vez, la primera vez que alguien te escribe. Ideal para un mensaje de bienvenida."
+      },
+      "after_inactivity": {
+        "title": "Bienvenida tras un tiempo sin escribir",
+        "description": "Se envía en su primer mensaje y de nuevo cuando un cliente escribe tras un largo silencio. Ideal para «bienvenido de nuevo»."
+      },
+      "every_n_days": {
+        "title": "Una vez cada pocos días, cuando escriban",
+        "description": "Se envía cuando un cliente escribe, pero no vuelve a enviarse al mismo cliente hasta que pasen los días que elijas. Ideal para un aviso de ausencia o fuera de horario."
+      }
+    },
+    "intervalOption": "{count} {count, plural, =1 {día} other {días}}",
+    "scheduleToggle": "Solo en ciertos días y horas",
+    "scheduleToggleHint": "Déjalo desactivado para enviarlo a cualquier hora. Actívalo para un mensaje de ausencia (por ejemplo, cada tarde) o para el horario de atención.",
+    "daysLabel": "Días",
+    "days": {
+      "1": "Lun",
+      "2": "Mar",
+      "3": "Mié",
+      "4": "Jue",
+      "5": "Vie",
+      "6": "Sáb",
+      "7": "Dom"
+    },
+    "timeFromLabel": "Desde",
+    "timeToLabel": "Hasta",
+    "timezoneLabel": "Zona horaria",
+    "scheduleHint": "Se incluyen ambas horas. Si «Hasta» es anterior a «Desde», el intervalo cruza la medianoche: de 18:00 a 09:00 abarca la tarde y la mañana siguiente, y el día que marcas es el día en que empieza.",
+    "messageTitle": "Mensaje",
+    "messageHint": "Se envía justo después de que el cliente escribe, dentro de la ventana de respuesta de 24 horas de WhatsApp.",
+    "previewTitle": "Vista previa",
+    "summary": {
+      "first_message": "Solo el primer mensaje",
+      "after_inactivity": "Primer mensaje y tras {count} {count, plural, =1 {día} other {días}} sin escribir",
+      "everyDay": "Todos los días",
+      "schedule": "{days}, {from}–{to} ({timezone})",
+      "every_n_days": "Como máximo una vez cada {count} {count, plural, =1 {día} other {días}}"
+    },
+    "priorityNote": "Solo se envía un mensaje por cada mensaje del cliente. Si coinciden varios, va primero el limitado a ciertas horas, luego los de «primer mensaje» y después el más antiguo.",
+    "errors": {
+      "nameRequired": "Escribe un nombre.",
+      "nameTooLong": "El nombre puede tener como máximo {max} caracteres.",
+      "sendWhenInvalid": "Elige cuándo enviarlo.",
+      "intervalInvalid": "Elige un periodo de entre {min} y {max} días.",
+      "daysRequired": "Elige al menos un día.",
+      "daysInvalid": "Elige días válidos.",
+      "timeInvalid": "Escribe una hora de inicio y una de fin válidas.",
+      "timesEqual": "La hora de inicio y la de fin deben ser distintas.",
+      "timezoneInvalid": "Elige una zona horaria válida.",
+      "invalidMessage": "Corrige el mensaje."
+    },
+    "intervalLabel": {
+      "after_inactivity": "Tiempo sin escribir",
+      "every_n_days": "No más de una vez cada"
+    },
+    "intervalHint": {
+      "after_inactivity": "Tiempo que el cliente debe estar sin escribir para que el mensaje se envíe de nuevo.",
+      "every_n_days": "El mismo cliente no recibirá este mensaje de nuevo hasta que pasen estos días."
+    },
+    "toggleAria": "Activar o desactivar «{name}»",
+    "editAria": "Editar «{name}»",
+    "deleteAria": "Eliminar «{name}»",
+    "retry": "Reintentar"
   }
 }

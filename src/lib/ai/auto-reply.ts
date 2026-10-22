@@ -94,6 +94,9 @@ export async function dispatchInboundToAiReply(
     if (conv.ai_reply_count >= config.autoReplyMaxPerConversation) return
 
     const messages = await buildConversationContext(db, conversationId)
+    // Fork: a bot note sent a moment ago (welcome/away) can sit after the
+    // customer's message; the model must answer THEIR turn, so end on it.
+    while (messages.at(-1)?.role === 'assistant') messages.pop()
     if (messages.length === 0) return
 
     // Account-wide throttle on the shared BYO key. The per-conversation

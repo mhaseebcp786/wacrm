@@ -195,6 +195,33 @@ BEGIN
     RAISE EXCEPTION
       'messages_content_type_check does not allow rich_interactive and carousel — migration 90003 did not apply or was overwritten';
   END IF;
+  -- ===== SaaS fork assertions (migration 90004 — welcome & away messages) =====
+  IF to_regclass('public.saas_autoresponders') IS NULL
+     OR to_regclass('public.saas_autoresponder_sends') IS NULL THEN
+    RAISE EXCEPTION 'saas_autoresponders / saas_autoresponder_sends are missing — migration 90004 did not apply';
+  END IF;
+  IF (
+    SELECT COUNT(*) FROM pg_class
+    WHERE oid IN (
+      'public.saas_autoresponders'::regclass,
+      'public.saas_autoresponder_sends'::regclass
+    ) AND relrowsecurity
+  ) <> 2 THEN
+    RAISE EXCEPTION 'saas_autoresponders / saas_autoresponder_sends must both have row level security enabled';
+  END IF;
+  IF COALESCE((SELECT pg_get_constraintdef(oid) FROM pg_constraint
+               WHERE conname = 'saas_autoresponders_send_when_check'
+                 AND conrelid = 'public.saas_autoresponders'::regclass), '')
+       NOT LIKE '%every_n_days%' THEN
+    RAISE EXCEPTION 'saas_autoresponders.send_when does not allow every_n_days — migration 90004 did not apply or was overwritten';
+  END IF;
+  IF EXISTS (
+    SELECT 1 FROM pg_policies
+    WHERE schemaname = 'public' AND tablename = 'saas_autoresponders'
+      AND cmd <> 'SELECT'
+  ) THEN
+    RAISE EXCEPTION 'saas_autoresponders must have no write policies (rules are written by the API with the service role)';
+  END IF;
   -- ===== end SaaS fork assertions =====
 
   RAISE NOTICE 'schema verification passed';

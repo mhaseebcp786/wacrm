@@ -17,6 +17,7 @@ import { verifyMetaWebhookSignature } from '@/lib/whatsapp/webhook-signature'
 import { resumeAwaitingReply, runAutomationsForTrigger } from '@/lib/automations/engine'
 import { dispatchInboundToFlows } from '@/lib/flows/engine'
 import { dispatchInboundToAiReply } from '@/lib/ai/auto-reply'
+import { dispatchSaasAutoresponders } from '@/saas/lib/autoresponder/dispatch'
 import { dispatchWebhookEvent } from '@/lib/webhooks/deliver'
 import {
   handleTemplateWebhookChange,
@@ -925,6 +926,13 @@ async function processMessage(
         },
       })
   const contentConsumed = flowConsumed || automationConsumed
+  // Welcome & Away Messages (fork): one automatic greeting, before automations.
+  // A button tap answers one of our own messages, so it is never greeted.
+  await dispatchSaasAutoresponders({
+    accountId, conversationId: conversation.id, contactId: contactRecord.id,
+    consumed: contentConsumed || !!interactiveReplyId,
+    inboundAt: new Date(parseInt(message.timestamp) * 1000),
+  })
 
   const automationTriggers: (
     | 'new_contact_created'

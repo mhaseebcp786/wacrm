@@ -6,6 +6,7 @@ const h = vi.hoisted(() => ({
   resumeAwaitingReply: vi.fn(),
   dispatchInboundToFlows: vi.fn(),
   dispatchInboundToAiReply: vi.fn(),
+  dispatchSaasAutoresponders: vi.fn(),
   dispatchWebhookEvent: vi.fn(),
   state: {
     // Result the message upsert's .select() resolves to. A genuine insert
@@ -277,6 +278,9 @@ vi.mock('@/lib/flows/engine', () => ({
 vi.mock('@/lib/ai/auto-reply', () => ({
   dispatchInboundToAiReply: h.dispatchInboundToAiReply,
 }))
+vi.mock('@/saas/lib/autoresponder/dispatch', () => ({
+  dispatchSaasAutoresponders: h.dispatchSaasAutoresponders,
+}))
 vi.mock('@/lib/webhooks/deliver', () => ({
   dispatchWebhookEvent: h.dispatchWebhookEvent,
 }))
@@ -398,6 +402,7 @@ beforeEach(() => {
   h.dispatchInboundToFlows.mockResolvedValue({ consumed: false })
   h.resumeAwaitingReply.mockResolvedValue(false)
   h.dispatchInboundToAiReply.mockResolvedValue(undefined)
+  h.dispatchSaasAutoresponders.mockResolvedValue(undefined)
   h.dispatchWebhookEvent.mockResolvedValue(undefined)
   h.runAutomationsForTrigger.mockImplementation(() => {
     h.state.automationStarted++
@@ -1013,6 +1018,87 @@ describe('status webhook: failed statuses keep Meta\'s reason (#535)', () => {
     expect(h.state.recipientUpdates).toHaveLength(1)
     expect(h.state.recipientUpdates[0]).not.toHaveProperty('error_message')
     expect(h.state.recipientUpdates[0]).not.toHaveProperty('error_code')
+  })
+})
+
+describe('inbound webhook: welcome & away messages (fork)', () => {
+  it('hands the stored message to the autoresponder with the customer’s own timestamp', async () => {
+    await runWebhook()
+
+    expect(h.dispatchSaasAutoresponders).toHaveBeenCalledTimes(1)
+    expect(h.dispatchSaasAutoresponders).toHaveBeenCalledWith({
+      accountId: expect.any(String),
+      conversationId: 'conv-1',
+      contactId: expect.any(String),
+      consumed: false,
+      inboundAt: new Date(1700000000 * 1000),
+    })
+  })
+
+  it('greets before any automation trigger runs', async () => {
+    const order: string[] = []
+    h.dispatchSaasAutoresponders.mockImplementation(async () => {
+      order.push('autoresponder')
+    })
+    h.runAutomationsForTrigger.mockImplementation(async () => {
+      order.push('automation')
+    })
+
+    await runWebhook()
+
+    expect(order[0]).toBe('autoresponder')
+    expect(order).toContain('automation')
+  })
+
+  it('tells it when a flow already answered', async () => {
+    h.dispatchInboundToFlows.mockResolvedValue({ consumed: true })
+
+    await runWebhook()
+
+    expect(h.dispatchSaasAutoresponders).toHaveBeenCalledWith(
+      expect.objectContaining({ consumed: true }),
+    )
+  })
+
+  it('tells it when a waiting automation took the message', async () => {
+    h.resumeAwaitingReply.mockResolvedValue(true)
+
+    await runWebhook()
+
+    expect(h.dispatchSaasAutoresponders).toHaveBeenCalledWith(
+      expect.objectContaining({ consumed: true }),
+    )
+  })
+
+  it('treats a button tap as already answered, so “Stop promotions” is never greeted', async () => {
+    await runWebhook({
+      id: 'wamid.BTN2',
+      from: '15551230000',
+      timestamp: '1700000000',
+      type: 'button',
+      button: { text: 'Stop promotions', payload: 'STOP' },
+      context: { id: 'wamid.BROADCAST1' },
+    })
+
+    expect(h.dispatchSaasAutoresponders).toHaveBeenCalledWith(
+      expect.objectContaining({ consumed: true }),
+    )
+  })
+
+  it('still lets the AI answer the question after a greeting', async () => {
+    h.dispatchSaasAutoresponders.mockResolvedValue(true)
+
+    await runWebhook()
+
+    expect(h.dispatchInboundToAiReply).toHaveBeenCalledTimes(1)
+  })
+
+  it('does not run for a replayed delivery', async () => {
+    h.state.messageUpsertResult = []
+
+    await runWebhook()
+
+    expect(h.dispatchSaasAutoresponders).not.toHaveBeenCalled()
   })
 })
 

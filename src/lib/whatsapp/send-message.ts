@@ -89,6 +89,7 @@ export interface SendMessageParams {
   /** Structured payload for `messageType === 'interactive'`. */
   interactivePayload?: InteractiveMessagePayload | null;
   replyToMessageId?: string | null;
+  senderType?: 'agent' | 'bot'; // fork: 'bot' = automatic send (default 'agent')
 }
 
 export interface SendMessageResult {
@@ -484,7 +485,7 @@ export async function sendMessageToConversation(
     .from('messages')
     .insert({
       conversation_id: conversationId,
-      sender_type: 'agent',
+      sender_type: params.senderType ?? 'agent',
       content_type: messageType,
       content_text: persistedText,
       media_url: mediaUrl || null,
@@ -522,6 +523,10 @@ export async function sendMessageToConversation(
       updated_at: new Date().toISOString(),
     })
     .eq('id', conversationId);
+
+  if (params.senderType === 'bot') {
+    return { messageId: messageRecord.id, whatsappMessageId: waMessageId };
+  }
 
   // Pause any active Flow run for this contact — the agent stepping in
   // is the strongest "yield, human is here" signal. Best-effort.

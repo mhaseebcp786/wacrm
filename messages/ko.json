@@ -1812,6 +1812,7 @@
       "whatsapp": "WhatsApp",
       "templates": "템플릿",
       "quick-replies": "빠른 답장",
+      "welcome-away": "환영·부재 메시지",
       "fields": "필드 & 태그",
       "deals": "딜 & 통화",
       "members": "팀원",
@@ -2848,6 +2849,12 @@
       "inactive": "이 추천 답변은 꺼져 있습니다",
       "unsupported": "이 메시지 유형은 아직 보낼 수 없습니다"
     },
+    "saasAutoresponder": {
+      "notFound": "환영 또는 부재 메시지를 찾을 수 없습니다",
+      "saveFailed": "메시지를 저장하지 못했습니다",
+      "loadFailed": "메시지를 불러오지 못했습니다",
+      "invalid": "메시지를 저장할 수 없습니다. 양식의 문제를 확인하세요."
+    },
     "broadcast": {
       "alreadyRunning": "이 브로드캐스트의 발송이 이미 진행 중입니다. 완료될 때까지 기다린 후 다시 재개하세요.",
       "recipientsRequired": "`recipients`(권장) 또는 `phone_numbers`를 제공하세요 — 비어 있지 않은 배열이어야 합니다",
@@ -3117,5 +3124,95 @@
       "empty": "전화번호나 이메일이 있는 일치하는 연락처가 없습니다.",
       "loadError": "연락처를 불러오지 못했습니다."
     }
+  },
+  "SaasAutoresponder": {
+    "title": "환영 및 부재 메시지",
+    "description": "고객이 메시지를 보내면 자동으로 메시지를 보냅니다. 인사말, 업무 시간 외 안내, 다시 오신 것을 환영하는 메시지 등에 쓸 수 있습니다. 상담원이 필요 없습니다. 키워드 답변이나 여러 단계의 규칙은 자동화를 사용하세요.",
+    "new": "새 자동 메시지",
+    "dialogNew": "새 환영 또는 부재 메시지",
+    "dialogEdit": "메시지 수정",
+    "edit": "수정",
+    "delete": "삭제",
+    "empty": "아직 자동 메시지가 없습니다. 고객이 메시지를 보냈을 때 인사할 메시지를 만들어 보세요.",
+    "loadError": "메시지를 불러오지 못했습니다",
+    "saveError": "메시지를 저장하지 못했습니다",
+    "created": "메시지를 만들었습니다",
+    "updated": "메시지를 수정했습니다",
+    "deleteConfirm": "이 자동 메시지를 삭제할까요? 고객에게 더 이상 전송되지 않습니다.",
+    "deleteError": "메시지를 삭제하지 못했습니다",
+    "activeLabel": "켜짐",
+    "inactive": "꺼짐",
+    "cancel": "취소",
+    "save": "저장",
+    "fixIssues": "표시된 문제를 먼저 해결하세요",
+    "nameLabel": "이름",
+    "namePlaceholder": "예: 환영 인사, 업무 시간 외",
+    "whenTitle": "언제 보낼까요?",
+    "sendWhen": {
+      "first_message": {
+        "title": "고객의 첫 메시지에",
+        "description": "누군가 처음 메시지를 보냈을 때 한 번만 보냅니다. 환영 메시지에 알맞습니다."
+      },
+      "after_inactivity": {
+        "title": "오랜만에 돌아왔을 때 환영",
+        "description": "첫 메시지에 보내고, 오래 연락이 없던 고객이 다시 메시지를 보낼 때도 보냅니다. ‘다시 오신 것을 환영합니다’에 알맞습니다."
+      },
+      "every_n_days": {
+        "title": "고객이 메시지를 보낼 때, 며칠에 한 번",
+        "description": "고객이 메시지를 보낼 때 보내되, 정한 기간이 지나기 전에는 같은 고객에게 다시 보내지 않습니다. 부재 또는 업무 시간 외 안내에 알맞습니다."
+      }
+    },
+    "intervalOption": "{count}일",
+    "scheduleToggle": "특정 요일과 시간에만",
+    "scheduleToggleHint": "끄면 언제든 보냅니다. 부재 메시지(예: 매일 저녁)나 영업 시간 안내에 사용하세요.",
+    "daysLabel": "요일",
+    "days": {
+      "1": "월",
+      "2": "화",
+      "3": "수",
+      "4": "목",
+      "5": "금",
+      "6": "토",
+      "7": "일"
+    },
+    "timeFromLabel": "시작",
+    "timeToLabel": "종료",
+    "timezoneLabel": "시간대",
+    "scheduleHint": "시작과 종료 시각 모두 포함됩니다. ‘종료’가 ‘시작’보다 이르면 자정을 넘기는 구간입니다. 예를 들어 18:00~09:00은 저녁과 다음 날 아침을 포함하며, 선택한 요일은 구간이 시작되는 요일입니다.",
+    "messageTitle": "메시지",
+    "messageHint": "고객이 메시지를 보낸 직후, WhatsApp의 24시간 답장 기간 안에 전송됩니다.",
+    "previewTitle": "미리보기",
+    "summary": {
+      "first_message": "첫 메시지만",
+      "after_inactivity": "첫 메시지, 그리고 {count}일 동안 메시지가 없다가 다시 보낼 때",
+      "everyDay": "매일",
+      "schedule": "{days}, {from}~{to} ({timezone})",
+      "every_n_days": "{count}일에 최대 한 번"
+    },
+    "priorityNote": "고객 메시지 하나당 메시지는 한 번만 보냅니다. 여러 개가 해당되면 특정 시간대로 제한된 메시지가 먼저, 그다음 ‘첫 메시지’ 메시지, 마지막으로 가장 오래된 메시지 순입니다.",
+    "errors": {
+      "nameRequired": "이름을 입력하세요.",
+      "nameTooLong": "이름은 최대 {max}자까지 입력할 수 있습니다.",
+      "sendWhenInvalid": "보낼 시점을 선택하세요.",
+      "intervalInvalid": "{min}일에서 {max}일 사이의 기간을 선택하세요.",
+      "daysRequired": "요일을 하나 이상 선택하세요.",
+      "daysInvalid": "올바른 요일을 선택하세요.",
+      "timeInvalid": "올바른 시작 및 종료 시각을 입력하세요.",
+      "timesEqual": "시작과 종료 시각은 달라야 합니다.",
+      "timezoneInvalid": "올바른 시간대를 선택하세요.",
+      "invalidMessage": "메시지를 수정하세요."
+    },
+    "intervalLabel": {
+      "after_inactivity": "연락이 없는 기간",
+      "every_n_days": "다음 기간에 최대 한 번"
+    },
+    "intervalHint": {
+      "after_inactivity": "메시지를 다시 보내려면 고객이 이 기간 동안 메시지를 보내지 않아야 합니다.",
+      "every_n_days": "같은 고객에게는 이 기간이 지나기 전까지 이 메시지를 다시 보내지 않습니다."
+    },
+    "toggleAria": "“{name}” 켜기/끄기",
+    "editAria": "“{name}” 수정",
+    "deleteAria": "“{name}” 삭제",
+    "retry": "다시 시도"
   }
 }

@@ -1812,6 +1812,7 @@
       "whatsapp": "WhatsApp",
       "templates": "Templates",
       "quick-replies": "Quick replies",
+      "welcome-away": "Welcome & away",
       "fields": "Fields & tags",
       "deals": "Deals & currency",
       "members": "Team members",
@@ -2848,6 +2849,12 @@
       "inactive": "This suggested reply is switched off",
       "unsupported": "This message type can't be sent yet"
     },
+    "saasAutoresponder": {
+      "notFound": "Welcome or away message not found",
+      "saveFailed": "Couldn't save the message",
+      "loadFailed": "Couldn't load the messages",
+      "invalid": "The message can't be saved. Check the form for problems."
+    },
     "broadcast": {
       "alreadyRunning": "A delivery pass is already running for this broadcast. Wait for it to finish before resuming again.",
       "recipientsRequired": "Provide either `recipients` (preferred) or `phone_numbers` — must be a non-empty array",
@@ -3117,5 +3124,95 @@
       "empty": "No matching contacts with a phone number or email.",
       "loadError": "Couldn't load your contacts."
     }
+  },
+  "SaasAutoresponder": {
+    "title": "Welcome & away messages",
+    "description": "Send a message automatically when a customer writes to you: a greeting, an after-hours note, or a welcome back. No agent needed. For keyword replies or multi-step rules, use Automations.",
+    "new": "New automatic message",
+    "dialogNew": "New welcome or away message",
+    "dialogEdit": "Edit message",
+    "edit": "Edit",
+    "delete": "Delete",
+    "empty": "No automatic messages yet. Create one to greet customers when they write to you.",
+    "loadError": "Couldn't load the messages",
+    "saveError": "Couldn't save the message",
+    "created": "Message created",
+    "updated": "Message updated",
+    "deleteConfirm": "Delete this automatic message? Customers will stop receiving it.",
+    "deleteError": "Couldn't delete the message",
+    "activeLabel": "Switched on",
+    "inactive": "Off",
+    "cancel": "Cancel",
+    "save": "Save",
+    "fixIssues": "Fix the highlighted problems first",
+    "nameLabel": "Name",
+    "namePlaceholder": "e.g. Welcome, After hours",
+    "whenTitle": "When should it be sent?",
+    "sendWhen": {
+      "first_message": {
+        "title": "On a customer’s first message",
+        "description": "Sent once, the first time someone writes to you. Good for a welcome message."
+      },
+      "after_inactivity": {
+        "title": "Welcome back after a quiet spell",
+        "description": "Sent on their first message, and again when a customer writes after a long silence. Good for “welcome back”."
+      },
+      "every_n_days": {
+        "title": "Once every few days, whenever they write",
+        "description": "Sent when a customer writes, but not again to the same customer until the days you choose have passed. Good for an away or after-hours note."
+      }
+    },
+    "intervalOption": "{count} {count, plural, =1 {day} other {days}}",
+    "scheduleToggle": "Only on certain days and times",
+    "scheduleToggleHint": "Leave this off to send at any time. Turn it on for an away message (for example every evening) or for opening hours.",
+    "daysLabel": "Days",
+    "days": {
+      "1": "Mon",
+      "2": "Tue",
+      "3": "Wed",
+      "4": "Thu",
+      "5": "Fri",
+      "6": "Sat",
+      "7": "Sun"
+    },
+    "timeFromLabel": "From",
+    "timeToLabel": "Until",
+    "timezoneLabel": "Time zone",
+    "scheduleHint": "Both times are included. If “Until” is earlier than “From”, the window runs overnight: 18:00 to 09:00 covers the evening and the following morning, and the day you tick is the day it starts on.",
+    "messageTitle": "Message",
+    "messageHint": "Sent right after the customer writes, inside WhatsApp’s 24-hour reply window.",
+    "previewTitle": "Preview",
+    "summary": {
+      "first_message": "First message only",
+      "after_inactivity": "First message, and after {count} {count, plural, =1 {day} other {days}} of silence",
+      "everyDay": "Every day",
+      "schedule": "{days}, {from}–{to} ({timezone})",
+      "every_n_days": "At most once every {count} {count, plural, =1 {day} other {days}}"
+    },
+    "priorityNote": "Only one message is sent per customer message. If several match, the one limited to certain hours goes first, then “first message” ones, then the oldest.",
+    "errors": {
+      "nameRequired": "Enter a name.",
+      "nameTooLong": "The name can be at most {max} characters.",
+      "sendWhenInvalid": "Choose when to send it.",
+      "intervalInvalid": "Choose a period between {min} and {max} days.",
+      "daysRequired": "Pick at least one day.",
+      "daysInvalid": "Pick valid days.",
+      "timeInvalid": "Enter a valid start and end time.",
+      "timesEqual": "The start and end times must be different.",
+      "timezoneInvalid": "Choose a valid time zone.",
+      "invalidMessage": "Fix the message below."
+    },
+    "intervalLabel": {
+      "after_inactivity": "Quiet period",
+      "every_n_days": "Not more than once every"
+    },
+    "intervalHint": {
+      "after_inactivity": "How long the customer must go without writing before the message is sent again.",
+      "every_n_days": "The same customer will not get this message again until this many days have passed."
+    },
+    "toggleAria": "Switch “{name}” on or off",
+    "editAria": "Edit “{name}”",
+    "deleteAria": "Delete “{name}”",
+    "retry": "Try again"
   }
 }

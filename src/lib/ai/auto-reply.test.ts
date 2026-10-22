@@ -143,6 +143,20 @@ describe('dispatchInboundToAiReply — eligibility gates', () => {
     expect(h.sendTypingIndicator).not.toHaveBeenCalled()
   })
 
+  it('asks the model to answer the customer even when a bot note was sent after their message', async () => {
+    h.buildConversationContext.mockResolvedValue([
+      { role: 'user', content: 'price of the blue sofa?' },
+      { role: 'assistant', content: 'Welcome to Sunrise Furniture!' },
+    ])
+    await dispatchInboundToAiReply(ARGS)
+    expect(h.generateReply).toHaveBeenCalledWith(
+      expect.objectContaining({
+        messages: [{ role: 'user', content: 'price of the blue sofa?' }],
+      }),
+    )
+    expect(h.engineSendText).toHaveBeenCalled()
+  })
+
   it('does not send when the atomic slot claim loses the race', async () => {
     h.state.claim = false
     await dispatchInboundToAiReply(ARGS)
