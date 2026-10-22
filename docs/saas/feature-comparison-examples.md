@@ -72,20 +72,25 @@ day-and-hour schedule. The full spec is [`specs/reference-app/02-autoresponder.m
 | **B. Menu that remembers what you tapped.** The app asks "What are you looking for?" with _Sofa_ and _Bed_. The customer taps _Sofa_ and gets sofa questions, as a short conversation.                                                                            | Yes (its flow builder)                                 | Yes (its flows feature)                                                                                              |
 | **C. Sort the lead automatically.** A customer says "I want a quote". The app tags them "Hot lead", assigns the chat to Priya (or rotates between agents), creates a deal worth 50,000 in the sales pipeline, and replies "Priya will contact you in 10 minutes." | Only partly. It is more a reply tool than a sales tool | Yes. This is wacrm's strongest area                                                                                  |
 | **D. Follow up if they go silent.** The customer asks for a quote and goes quiet. The app waits two days, then sends "Still interested?". If they reply, it stops.                                                                                                | Yes (drip campaigns and reminders)                     | Can wait, then send, and can pause for a reply. Whether scheduled "time-based" triggers actually fire is unconfirmed |
-| **E. Customer clicked your Facebook or Instagram ad.** Someone taps "Message us" on an ad and is greeted with "Thanks for clicking our ad! Interested in the sofa offer?"                                                                                         | Yes                                                    | No                                                                                                                   |
+| **E. Customer clicked your Facebook or Instagram ad.** Someone taps "Message us" on an ad and is greeted with "Thanks for clicking our ad! Interested in the sofa offer?"                                                                                         | Yes                                                    | Yes (trigger "Ad Click"; new, not tested with a real ad)                                                             |
 | **F. AI answers questions.** A customer asks "Do you deliver to Pune, and how long does it take?". The AI reads your business information and answers, or hands the chat to a human if it cannot.                                                                 | Yes                                                    | Yes (you bring your own AI account)                                                                                  |
 
 ### What can start an automation
 
 - **Reference app chatbot:** exact word match, contains a word, button tapped, list row chosen, a form submitted, first message, "anything else" (fallback), a Facebook or Instagram ad click, and a catalogue order.
-- **wacrm automations:** new message, first message, keyword (exact, contains, or whole word), new contact, chat assigned, tag added, a button or list row tapped, and time-based.
+- **wacrm automations:** new message, first message, keyword (exact, contains, or whole word), new contact, chat assigned, tag added, a button or list row tapped (by its hidden id, or by its **text**), a form submitted, "anything else" (fallback), a Facebook or Instagram ad click, a catalogue order, and time-based.
 
-wacrm has no fallback ("anything else") trigger, no ad-click trigger, no catalogue-order trigger and no
-form-submitted trigger.
+Since 2026-10-22 wacrm has every start condition the reference chatbot has (see
+[`features/06-automation-triggers.md`](./features/06-automation-triggers.md)). Differences remain: a
+submitted form carries no answers into later steps and cannot be matched to one specific form, the catalogue-order product
+filter is typed ids rather than a picker, the ad is not saved on the conversation, and the link to a Meta lead form is not
+there. Unlike the reference app, every matching automation runs, not only the first, and the "anything else" fallback
+silences the AI reply for the messages it catches.
 
 ### What an automation can do after it starts (wacrm)
 
-Send text, buttons, a list or an approved template. Add or remove a tag. Assign the chat to a person or
+Send text, buttons, a list, an approved template, or **a rich message** (a photo with buttons, a card carousel, a
+location, a contact, a PDF… any of the nine message types, new). Add or remove a tag. Assign the chat to a person or
 rotate between agents. Update a contact's details. Create a sales deal. Wait for minutes, hours or days.
 Branch on a condition (tag, contact detail, message text or time of day). Call another system. Close the
 conversation. Every run is logged step by step.
@@ -93,26 +98,28 @@ conversation. Every run is logged step by step.
 ### Who answers first when a message arrives (wacrm)
 
 A conversation flow goes first. Then an automation that was waiting for this customer's reply. Then the
-automation triggers. Then the AI reply. Once one of the first two has handled a message, the later ones
-stay quiet, so the customer does not get two bots answering.
+automation triggers, and the "anything else" fallback if none of the specific ones matched. Then the AI reply
+(skipped when one of the new automations matched). Once one of the first two has handled a message, the later ones
+stay quiet. Beyond that, several automations that match the same message each reply, so keep one automation per job.
 
 ---
 
 ## Summary
 
-| What you want                                              | Reference app | wacrm                                 |
-| ---------------------------------------------------------- | ------------- | ------------------------------------- |
-| Saved replies with photos, maps, buttons and contact cards | Yes           | Yes (never tested with real WhatsApp) |
-| Welcome message, away-hours message, "welcome back"        | Yes           | Yes (Welcome & away messages, new)    |
-| Keyword replies and tap-a-button menus                     | Yes           | Yes                                   |
-| Tag, assign, create a deal, send to another system         | Basic         | Strong                                |
-| Reply to ad clicks, catalogue orders, in-chat forms        | Yes           | No                                    |
-| AI answering customers                                     | Yes           | Yes                                   |
+| What you want                                              | Reference app | wacrm                                  |
+| ---------------------------------------------------------- | ------------- | -------------------------------------- |
+| Saved replies with photos, maps, buttons and contact cards | Yes           | Yes (never tested with real WhatsApp)  |
+| Welcome message, away-hours message, "welcome back"        | Yes           | Yes (Welcome & away messages, new)     |
+| Keyword replies and tap-a-button menus                     | Yes           | Yes                                    |
+| Tag, assign, create a deal, send to another system         | Basic         | Strong                                 |
+| Reply to ad clicks, catalogue orders, in-chat forms        | Yes           | Yes (new, untested with real WhatsApp) |
+| AI answering customers                                     | Yes           | Yes                                    |
 
 **Done since this was written:** the autoresponder gap (examples A to D in section 2) is closed by Welcome &
-away messages. What is still missing compared with the reference app: replies to ad clicks, catalogue orders and
-in-chat form submissions, drip sequences and reminders, and the "approved template" variant of the autoresponder
-(left out on purpose, see the feature doc).
+away messages. The automation gap (ad clicks, catalogue orders, in-chat form submissions, button and list text, "anything else",
+rich messages) is closed by the new triggers and the **Send Rich Message** step. What is still missing compared with
+the reference app: drip sequences and reminders, and the "approved template" variant of the autoresponder (left out
+on purpose, see the feature doc).
 
 ## Open items
 

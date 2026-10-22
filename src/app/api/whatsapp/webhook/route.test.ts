@@ -7,6 +7,7 @@ const h = vi.hoisted(() => ({
   dispatchInboundToFlows: vi.fn(),
   dispatchInboundToAiReply: vi.fn(),
   dispatchSaasAutoresponders: vi.fn(),
+  dispatchSaasAutomationTriggers: vi.fn(),
   dispatchWebhookEvent: vi.fn(),
   state: {
     // Result the message upsert's .select() resolves to. A genuine insert
@@ -281,6 +282,9 @@ vi.mock('@/lib/ai/auto-reply', () => ({
 vi.mock('@/saas/lib/autoresponder/dispatch', () => ({
   dispatchSaasAutoresponders: h.dispatchSaasAutoresponders,
 }))
+vi.mock('@/saas/lib/automations/dispatch', () => ({
+  dispatchSaasAutomationTriggers: h.dispatchSaasAutomationTriggers,
+}))
 vi.mock('@/lib/webhooks/deliver', () => ({
   dispatchWebhookEvent: h.dispatchWebhookEvent,
 }))
@@ -403,6 +407,7 @@ beforeEach(() => {
   h.resumeAwaitingReply.mockResolvedValue(false)
   h.dispatchInboundToAiReply.mockResolvedValue(undefined)
   h.dispatchSaasAutoresponders.mockResolvedValue(undefined)
+  h.dispatchSaasAutomationTriggers.mockResolvedValue({ handled: false })
   h.dispatchWebhookEvent.mockResolvedValue(undefined)
   h.runAutomationsForTrigger.mockImplementation(() => {
     h.state.automationStarted++
@@ -1099,6 +1104,107 @@ describe('inbound webhook: welcome & away messages (fork)', () => {
     await runWebhook()
 
     expect(h.dispatchSaasAutoresponders).not.toHaveBeenCalled()
+  })
+})
+
+describe('inbound webhook: extra automation triggers (fork)', () => {
+  it('hands the raw message and what happened to it so far to the dispatcher', async () => {
+    await runWebhook()
+
+    expect(h.dispatchSaasAutomationTriggers).toHaveBeenCalledTimes(1)
+    expect(h.dispatchSaasAutomationTriggers).toHaveBeenCalledWith({
+      accountId: expect.any(String),
+      contactId: expect.any(String),
+      conversationId: 'conv-1',
+      consumed: false,
+      isFirstInboundMessage: true,
+      message: expect.objectContaining({ id: expect.any(String), type: 'text' }),
+      inboundText: 'hello',
+      interactiveReplyId: undefined,
+    })
+  })
+
+  it('passes the tapped button id, and the unmodified message, for a tap', async () => {
+    const tap = {
+      id: 'wamid.TAP9',
+      from: '15551230000',
+      timestamp: '1700000000',
+      type: 'interactive',
+      interactive: {
+        type: 'button_reply',
+        button_reply: { id: 'book', title: 'Book now' },
+      },
+    }
+    await runWebhook(tap)
+
+    expect(h.dispatchSaasAutomationTriggers).toHaveBeenCalledWith(
+      expect.objectContaining({
+        interactiveReplyId: 'book',
+        inboundText: 'Book now',
+        message: expect.objectContaining({ interactive: tap.interactive }),
+      }),
+    )
+  })
+
+  it('runs after the upstream triggers and before the AI reply', async () => {
+    const order: string[] = []
+    h.runAutomationsForTrigger.mockImplementation(async () => {
+      order.push('upstream')
+    })
+    h.dispatchSaasAutomationTriggers.mockImplementation(async () => {
+      order.push('saas')
+      return { handled: false }
+    })
+    h.dispatchInboundToAiReply.mockImplementation(async () => {
+      order.push('ai')
+    })
+
+    await runWebhook()
+
+    expect(order.lastIndexOf('upstream')).toBeLessThan(order.indexOf('saas'))
+    expect(order.indexOf('saas')).toBeLessThan(order.indexOf('ai'))
+  })
+
+  it('tells it when a flow or a waiting automation already took the message', async () => {
+    h.resumeAwaitingReply.mockResolvedValue(true)
+
+    await runWebhook()
+
+    expect(h.dispatchSaasAutomationTriggers).toHaveBeenCalledWith(
+      expect.objectContaining({ consumed: true }),
+    )
+  })
+
+  it('tells it when a Welcome & Away message was just sent', async () => {
+    h.dispatchSaasAutoresponders.mockResolvedValue(true)
+
+    await runWebhook()
+
+    expect(h.dispatchSaasAutomationTriggers).toHaveBeenCalledWith(
+      expect.objectContaining({ greeted: true }),
+    )
+  })
+
+  it('keeps the AI from answering a message one of the extra automations answered', async () => {
+    h.dispatchSaasAutomationTriggers.mockResolvedValue({ handled: true })
+
+    await runWebhook()
+
+    expect(h.dispatchInboundToAiReply).not.toHaveBeenCalled()
+  })
+
+  it('still lets the AI answer when none of them did', async () => {
+    await runWebhook()
+
+    expect(h.dispatchInboundToAiReply).toHaveBeenCalledTimes(1)
+  })
+
+  it('does not run for a replayed delivery', async () => {
+    h.state.messageUpsertResult = []
+
+    await runWebhook()
+
+    expect(h.dispatchSaasAutomationTriggers).not.toHaveBeenCalled()
   })
 })
 

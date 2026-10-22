@@ -25,6 +25,9 @@ import { engineSendText, engineSendTemplate, engineSendInteractive } from './met
 import { validateInteractivePayload } from '@/lib/whatsapp/interactive'
 import { isDeliverableUrl } from '@/lib/webhooks/ssrf'
 import { getT } from '@/lib/i18n/translate'
+import { saasTriggerMatches } from '@/saas/lib/automations/triggers'
+import { runRichMessageStep } from '@/saas/lib/automations/rich-step'
+import type { SaasInboundSignals } from '@/saas/lib/automations/types'
 
 /** Step errors land in automation_logs and are shown on the logs page. */
 const tErr = getT('LibErrors.engine')
@@ -46,6 +49,8 @@ export interface AutomationContext {
   agent_id?: string
   /** Button / list-row id the customer tapped, for interactive_reply. */
   interactive_reply_id?: string
+  /** Extra facts about the inbound message (fork: button text, ad, order…). */
+  saas?: SaasInboundSignals
 }
 
 export interface DispatchInput {
@@ -281,6 +286,7 @@ export async function resumeAwaitingReply(input: AwaitingReplyInput): Promise<bo
         message_text: input.context.message_text ?? '',
         conversation_id: input.context.conversation_id,
         interactive_reply_id: input.context.interactive_reply_id,
+        saas: undefined,
       },
       parentStepId: pending.parent_step_id,
       branch: pending.branch,
@@ -713,6 +719,13 @@ async function runStep(step: AutomationStep, args: ExecuteArgs): Promise<string>
       return `template sent via Meta (${whatsapp_message_id})`
     }
 
+    case 'send_rich_message':
+      if (!args.contactId) throw new Error(tErr('needsContact', { step: step.step_type }))
+      return runRichMessageStep(step.step_config, {
+        accountId: args.automation.account_id,
+        conversationId: await resolveConversationId(args),
+      })
+
     case 'add_tag': {
       const cfg = step.step_config as TagStepConfig
       if (!args.contactId || !cfg.tag_id) throw new Error(tErr('needsContactAndTag', { step: 'add_tag' }))
@@ -991,6 +1004,9 @@ export function matchesWholeWord(
 }
 
 export function triggerMatches(automation: Automation, ctx: AutomationContext | undefined): boolean {
+  const saasMatch = saasTriggerMatches(automation, ctx?.saas)
+  if (saasMatch !== null) return saasMatch
+
   if (automation.trigger_type === 'keyword_match') {
     const cfg = automation.trigger_config as KeywordMatchTriggerConfig
     if (!cfg?.keywords || cfg.keywords.length === 0) return false

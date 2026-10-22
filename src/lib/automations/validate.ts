@@ -1,6 +1,8 @@
 import type { AutomationTriggerType } from '@/types'
 import { validateInteractivePayload } from '@/lib/whatsapp/interactive'
 import { getT } from '@/lib/i18n/translate'
+import { validateSaasTrigger } from '@/saas/lib/automations/triggers'
+import { validateRichMessageStep } from '@/saas/lib/automations/rich-validate'
 
 const t = getT('Validation.automations')
 
@@ -149,6 +151,9 @@ function validateOne(step: StepLike, path: string, issues: ValidationIssue[]): v
     case 'close_conversation':
       // No config required.
       break
+    case 'send_rich_message':
+      issues.push(...validateRichMessageStep(c, path))
+      break
     default:
       issues.push({ path, message: t('unknownStepType', { type: step.step_type }) })
   }
@@ -208,6 +213,7 @@ export function validateTriggerForActivation(
     }
   }
 
+  issues.push(...validateSaasTrigger(triggerType, triggerConfig))
   return issues
 }
 

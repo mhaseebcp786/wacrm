@@ -1,5 +1,6 @@
 import type { AccountRole } from "@/lib/auth/roles";
 import type { InteractiveMessagePayload } from "@/lib/whatsapp/interactive";
+import type { SaasAutomationTriggerType } from "@/saas/lib/automations/types";
 
 export type {
   InteractiveMessagePayload,
@@ -487,7 +488,8 @@ export type AutomationTriggerType =
   | 'time_based'
   /** Customer tapped a reply button / list row whose id matches; lets
    *  multi-step menus be chained across automations. */
-  | 'interactive_reply';
+  | 'interactive_reply'
+  | SaasAutomationTriggerType;
 
 export type AutomationStepType =
   | 'send_message'
@@ -502,7 +504,8 @@ export type AutomationStepType =
   | 'wait'
   | 'condition'
   | 'send_webhook'
-  | 'close_conversation';
+  | 'close_conversation'
+  | 'send_rich_message';
 
 export type AutomationLogStatus = 'success' | 'partial' | 'failed';
 

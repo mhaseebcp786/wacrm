@@ -159,6 +159,10 @@ vi.mock("./meta-send", () => ({
   engineSendInteractive: vi.fn(async () => ({ whatsapp_message_id: "m1" })),
 }));
 
+vi.mock("@/saas/lib/automations/rich-step", () => ({
+  runRichMessageStep: vi.fn(async () => "text sent via Meta (wamid.1)"),
+}));
+
 import {
   expireAwaitingReplies,
   resumeAwaitingReply,
@@ -166,6 +170,7 @@ import {
   triggerMatches,
 } from "./engine";
 import { engineSendInteractive, engineSendText } from "./meta-send";
+import { runRichMessageStep } from "@/saas/lib/automations/rich-step";
 import type { Automation, KeywordMatchTriggerConfig } from "@/types";
 
 const ACCOUNT = "acct-1";
@@ -894,5 +899,108 @@ describe("wait_for_reply", () => {
     expect(expired).toBe(1);
     expect(h.state.pending[0].status).toBe("expired");
     expect(h.state.logUpdates.at(-1)).toEqual({ error_message: "no reply within 24h" });
+  });
+});
+
+describe("triggerMatches — extra triggers (fork)", () => {
+  function automation(trigger_type: string, trigger_config: Record<string, unknown> = {}): Automation {
+    return {
+      id: "a1",
+      account_id: ACCOUNT,
+      user_id: "u1",
+      name: "extra",
+      trigger_type: trigger_type as Automation["trigger_type"],
+      trigger_config,
+      is_active: true,
+      execution_count: 0,
+      created_at: "",
+      updated_at: "",
+    };
+  }
+
+  it("reads the inbound facts off context.saas", () => {
+    const tap = { saas: { tap: "button" as const, replyTitle: "Book now" } };
+    expect(triggerMatches(automation("button_reply", { text: "book now" }), tap)).toBe(true);
+    expect(triggerMatches(automation("button_reply", { text: "cancel" }), tap)).toBe(false);
+    expect(triggerMatches(automation("list_reply"), tap)).toBe(false);
+    expect(triggerMatches(automation("meta_ads_ctwa"), { saas: { adReferral: {} } })).toBe(true);
+    expect(triggerMatches(automation("meta_ads_ctwa"), {})).toBe(false);
+  });
+
+  it("leaves the upstream triggers on their own rules", () => {
+    const ctx = { message_text: "price?", saas: { tap: "button" as const } };
+    expect(
+      triggerMatches(automation("keyword_match", { keywords: ["price"], match_type: "contains" }), ctx),
+    ).toBe(true);
+    expect(triggerMatches(automation("new_message_received"), ctx)).toBe(true);
+  });
+});
+
+describe("send_rich_message step (fork)", () => {
+  const message = {
+    message_type: "text",
+    payload: { type: "text", text: { body: "Hello!" } },
+  };
+
+  function setup() {
+    h.state.owned = { id: "c1" };
+    h.state.ownedConversation = { id: "conv1" };
+    h.state.automations = [
+      {
+        id: "a1",
+        account_id: ACCOUNT,
+        user_id: "u1",
+        trigger_type: "new_message_received",
+        trigger_config: {},
+        is_active: true,
+      },
+    ];
+    h.state.steps = [
+      {
+        id: "s1",
+        automation_id: "a1",
+        step_type: "send_rich_message",
+        position: 0,
+        parent_step_id: null,
+        branch: null,
+        step_config: message,
+      },
+    ];
+  }
+
+  const run = (contactId: string | null = "c1") =>
+    runAutomationsForTrigger({
+      accountId: ACCOUNT,
+      triggerType: "new_message_received",
+      contactId,
+      context: { conversation_id: "conv1" },
+    });
+
+  it("sends the message object into the conversation and logs success", async () => {
+    setup();
+    await run();
+
+    expect(runRichMessageStep).toHaveBeenCalledWith(message, {
+      accountId: ACCOUNT,
+      conversationId: "conv1",
+    });
+    const withStatus = h.state.logUpdates.filter((u) => "status" in u);
+    expect(withStatus.at(-1)).toMatchObject({ status: "success" });
+  });
+
+  it("records a failed step, not a crash, when the send is refused", async () => {
+    setup();
+    vi.mocked(runRichMessageStep).mockRejectedValueOnce(new Error("outside the 24-hour window"));
+    await run();
+
+    const withStatus = h.state.logUpdates.filter((u) => "status" in u);
+    expect(withStatus.at(-1)).toMatchObject({ status: "failed" });
+  });
+
+  it("needs a contact", async () => {
+    setup();
+    await run(null);
+
+    expect(runRichMessageStep).not.toHaveBeenCalled();
   });
 });

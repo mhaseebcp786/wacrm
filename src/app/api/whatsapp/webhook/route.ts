@@ -18,6 +18,7 @@ import { resumeAwaitingReply, runAutomationsForTrigger } from '@/lib/automations
 import { dispatchInboundToFlows } from '@/lib/flows/engine'
 import { dispatchInboundToAiReply } from '@/lib/ai/auto-reply'
 import { dispatchSaasAutoresponders } from '@/saas/lib/autoresponder/dispatch'
+import { dispatchSaasAutomationTriggers } from '@/saas/lib/automations/dispatch'
 import { dispatchWebhookEvent } from '@/lib/webhooks/deliver'
 import {
   handleTemplateWebhookChange,
@@ -928,7 +929,7 @@ async function processMessage(
   const contentConsumed = flowConsumed || automationConsumed
   // Welcome & Away Messages (fork): one automatic greeting, before automations.
   // A button tap answers one of our own messages, so it is never greeted.
-  await dispatchSaasAutoresponders({
+  const greeted = await dispatchSaasAutoresponders({
     accountId, conversationId: conversation.id, contactId: contactRecord.id,
     consumed: contentConsumed || !!interactiveReplyId,
     inboundAt: new Date(parseInt(message.timestamp) * 1000),
@@ -984,12 +985,20 @@ async function processMessage(
     }).catch((err) => console.error('[automations] dispatch failed:', err))
   }
 
+  // Extra automation triggers (fork): button text, form, ad, order, fallback.
+  // `handled` keeps the AI from answering a message one of them answered.
+  const { handled: saasHandled } = await dispatchSaasAutomationTriggers({
+    accountId, contactId: contactRecord.id, conversationId: conversation.id,
+    consumed: contentConsumed, greeted, isFirstInboundMessage, message, inboundText,
+    interactiveReplyId: interactiveReplyId ?? undefined,
+  })
+
   // AI auto-reply. Runs only for plain-text inbound the deterministic
   // flow runner did NOT consume (flows win over the LLM), and only when
   // the account has enabled it. Awaited inside `after()` (same reason as
   // the webhook dispatch below); `dispatchInboundToAiReply` owns its
   // eligibility gates + try/catch and never throws.
-  if (!contentConsumed && !interactiveReplyId && inboundText.trim()) {
+  if (!contentConsumed && !saasHandled && !interactiveReplyId && inboundText.trim()) {
     await dispatchInboundToAiReply({
       accountId,
       conversationId: conversation.id,

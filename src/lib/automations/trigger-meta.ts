@@ -1,4 +1,5 @@
 import type { AutomationTriggerType } from '@/types'
+import { SAAS_TRIGGER_META } from '@/saas/lib/automations/meta'
 
 export interface TriggerMeta {
   /** Tailwind classes for the Badge pill on the list row. */
@@ -32,6 +33,7 @@ export const TRIGGER_META: Record<AutomationTriggerType, TriggerMeta> = {
   time_based: {
     pillClass: 'border-slate-500/30 bg-slate-500/10 text-muted-foreground',
   },
+  ...SAAS_TRIGGER_META,
   interactive_reply: {
     pillClass: 'border-pink-500/30 bg-pink-500/10 text-pink-300',
   },

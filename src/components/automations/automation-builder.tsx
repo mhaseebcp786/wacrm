@@ -33,6 +33,7 @@ import {
   ArrowUp,
   MousePointerClick,
   List,
+  Images,
 } from "lucide-react"
 
 import { Button } from "@/components/ui/button"
@@ -73,6 +74,10 @@ import {
 } from "@/lib/automations/builder-tree"
 import { cn } from "@/lib/utils"
 import { isSendableInAutomation } from "@/saas/lib/whatsapp/automation-templates"
+import { SaasTriggerConfig } from "@/saas/components/automations/trigger-config"
+import { RichMessageStep } from "@/saas/components/automations/rich-message-step"
+import { SAAS_TRIGGER_OPTIONS } from "@/saas/lib/automations/meta"
+import { blankRichMessageConfig, richMessagePreview } from "@/saas/lib/automations/rich-config"
 
 // ------------------------------------------------------------
 // Types (builder-local — mirror the flattened rows we POST)
@@ -112,6 +117,7 @@ const STEP_META: Record<AutomationStepType, StepMeta> = {
   send_buttons: { label: "send_buttons", icon: MousePointerClick, border: "border-l-primary" },
   send_list: { label: "send_list", icon: List, border: "border-l-primary" },
   send_template: { label: "send_template", icon: FileText, border: "border-l-primary" },
+  send_rich_message: { label: "send_rich_message", icon: Images, border: "border-l-primary" },
   add_tag: { label: "add_tag", icon: Tag, border: "border-l-primary" },
   remove_tag: { label: "remove_tag", icon: TagIcon, border: "border-l-primary" },
   assign_conversation: { label: "assign_conversation", icon: UserCheck, border: "border-l-primary" },
@@ -128,6 +134,7 @@ const ADDABLE_STEPS: AutomationStepType[] = [
   "send_buttons",
   "send_list",
   "send_template",
+  "send_rich_message",
   "add_tag",
   "remove_tag",
   "assign_conversation",
@@ -144,6 +151,7 @@ const TRIGGER_OPTIONS: { value: AutomationTriggerType }[] = [
   { value: "first_inbound_message" },
   { value: "keyword_match" },
   { value: "interactive_reply" },
+  ...SAAS_TRIGGER_OPTIONS,
   { value: "new_contact_created" },
   { value: "conversation_assigned" },
   { value: "tag_added" },
@@ -181,6 +189,8 @@ function blankConfig(type: AutomationStepType): Record<string, unknown> {
       return toStepConfig(blankListPayload())
     case "send_template":
       return { template_name: "", language: "en_US" }
+    case "send_rich_message":
+      return blankRichMessageConfig()
     case "add_tag":
     case "remove_tag":
       return { tag_id: "" }
@@ -859,6 +869,7 @@ function TriggerCard({
             {type === "interactive_reply" && (
               <InteractiveReplyConfig config={config} onChange={onConfigChange} t={t} />
             )}
+            <SaasTriggerConfig type={type} config={config} onChange={onConfigChange} />
             {type === "tag_added" && (
               <div>
                 <label className="mb-1 block text-xs font-medium text-muted-foreground">
@@ -1352,6 +1363,8 @@ function StepEditor({
           </label>
         </>
       )
+    case "send_rich_message":
+      return <RichMessageStep config={cfg} onChange={(c) => onChange({ ...step, step_config: c })} />
     case "send_template":
       return (
         <SendTemplateFields
@@ -1569,6 +1582,8 @@ function previewFor(
         ? t("preview.withWaitForReply", { preview })
         : preview
     }
+    case "send_rich_message":
+      return richMessagePreview(step.step_config) || t("preview.noBody")
     case "send_template":
       return (step.step_config.template_name as string) || t("preview.pickTemplate")
     case "wait": {

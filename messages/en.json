@@ -1012,7 +1012,8 @@
         "wait": "Wait",
         "condition": "Condition (If/Else)",
         "send_webhook": "Send Webhook",
-        "close_conversation": "Close Conversation"
+        "close_conversation": "Close Conversation",
+        "send_rich_message": "Send Rich Message"
       },
       "triggers": {
         "new_message_received": {
@@ -1046,6 +1047,30 @@
         "time_based": {
           "label": "Time-Based",
           "hint": "On a recurring schedule"
+        },
+        "button_reply": {
+          "label": "Button Tapped",
+          "hint": "A customer taps a reply button (match its text, or any button)"
+        },
+        "list_reply": {
+          "label": "List Row Chosen",
+          "hint": "A customer chooses a list row (match its text, or any row)"
+        },
+        "flow_response": {
+          "label": "Form Submitted",
+          "hint": "A customer submits a WhatsApp Flow form"
+        },
+        "meta_ads_ctwa": {
+          "label": "Ad Click (Click-to-WhatsApp)",
+          "hint": "A customer starts the chat from a Facebook or Instagram ad"
+        },
+        "catalog_order": {
+          "label": "Catalogue Order",
+          "hint": "A customer sends a WhatsApp catalogue order"
+        },
+        "anything_else": {
+          "label": "Anything Else (Fallback)",
+          "hint": "A message no other automation picked up"
         }
       },
       "trigger": "Trigger",
@@ -3214,5 +3239,30 @@
     "editAria": "Edit “{name}”",
     "deleteAria": "Delete “{name}”",
     "retry": "Try again"
+  },
+  "SaasAutomations": {
+    "validation": {
+      "textInvalid": "text must be a string",
+      "textTooLong": "text can be at most {max} characters",
+      "productIdsInvalid": "product ids must be non-empty strings",
+      "productIdsTooMany": "at most {max} product ids are allowed"
+    },
+    "trigger": {
+      "buttonTextLabel": "Button text (optional)",
+      "buttonTextPlaceholder": "Leave blank for any button",
+      "buttonTextHelp": "Runs when a customer taps a reply button with this text (capitals don't matter). Blank runs for any button, including buttons on templates and broadcasts.",
+      "rowTextLabel": "Row text (optional)",
+      "rowTextPlaceholder": "Leave blank for any row",
+      "rowTextHelp": "Runs when a customer chooses a list row with this text (capitals don't matter). Blank runs for any row.",
+      "formHelp": "Runs when a customer submits a WhatsApp Flow form (any form).",
+      "adHelp": "Runs when a customer starts the chat by tapping a Click-to-WhatsApp ad on Facebook or Instagram.",
+      "productIdsLabel": "Product IDs (optional)",
+      "productIdsPlaceholder": "sku-1, sku-2",
+      "productIdsHelp": "Comma-separated product (retailer) IDs from your catalogue. Runs when the order contains any of them. Blank runs for any order.",
+      "fallbackHelp": "Runs only when no keyword, button-id, button, list, form, ad or first-message automation picked the message up, so use it as a catch-all reply. It is skipped for taps, forms and orders. An automation on \"New message received\" runs for every message and does not stop it."
+    },
+    "step": {
+      "richHint": "Sends one message built in the message editor: text, photo, video, audio, document, buttons, list, cards, location or contact."
+    }
   }
 }

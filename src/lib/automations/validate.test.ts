@@ -298,3 +298,93 @@ describe("validateTriggerForActivation", () => {
     expect(validateTriggerForActivation("some_future_trigger", {})).toEqual([]);
   });
 });
+
+describe("validateStepsForActivation — send_rich_message (fork)", () => {
+  const photoWithButtons = {
+    message_type: "interactive",
+    payload: {
+      type: "interactive",
+      interactive: {
+        type: "button",
+        header: { type: "image", image: { link: "https://example.com/a.jpg" } },
+        body: { text: "Pick one" },
+        action: {
+          buttons: [
+            { type: "reply", reply: { id: "a", title: "Browse sofas" } },
+            { type: "reply", reply: { id: "b", title: "Talk to a person" } },
+          ],
+        },
+      },
+    },
+  };
+
+  it("accepts a valid message object", () => {
+    expect(
+      validateStepsForActivation([
+        { step_type: "send_rich_message", step_config: photoWithButtons },
+      ]),
+    ).toEqual([]);
+  });
+
+  it("rejects an empty message, with a path under the step", () => {
+    const issues = validateStepsForActivation([
+      { step_type: "send_message", step_config: { text: "hi" } },
+      {
+        step_type: "send_rich_message",
+        step_config: {
+          message_type: "text",
+          payload: { type: "text", text: { body: "" } },
+        },
+      },
+    ]);
+    expect(issues.length).toBeGreaterThan(0);
+    expect(issues.every((i) => i.path.startsWith("steps[1]"))).toBe(true);
+  });
+
+  it("rejects a step_config that is not a message object", () => {
+    expect(
+      validateStepsForActivation([
+        { step_type: "send_rich_message", step_config: {} },
+      ]).length,
+    ).toBeGreaterThan(0);
+  });
+
+  it("validates a rich message nested in a condition branch", () => {
+    const issues = validateStepsForActivation([
+      {
+        step_type: "condition",
+        step_config: { subject: "tag_presence", operand: "t1" },
+        branches: {
+          yes: [{ step_type: "send_rich_message", step_config: {} }],
+        },
+      },
+    ]);
+    expect(issues.some((i) => i.path.startsWith("steps[0].yes.steps[0]"))).toBe(true);
+  });
+});
+
+describe("validateTriggerForActivation — extra triggers (fork)", () => {
+  it("accepts the triggers that need no configuration", () => {
+    for (const type of ["flow_response", "meta_ads_ctwa", "anything_else"]) {
+      expect(validateTriggerForActivation(type, {})).toEqual([]);
+    }
+  });
+
+  it("accepts a button / list trigger with blank or ordinary text", () => {
+    expect(validateTriggerForActivation("button_reply", {})).toEqual([]);
+    expect(validateTriggerForActivation("button_reply", { text: "Yes" })).toEqual([]);
+    expect(validateTriggerForActivation("list_reply", { text: "" })).toEqual([]);
+  });
+
+  it("rejects text that is not a string and malformed product ids", () => {
+    expect(
+      validateTriggerForActivation("button_reply", { text: 3 }).map((i) => i.path),
+    ).toEqual(["trigger.text"]);
+    expect(
+      validateTriggerForActivation("catalog_order", { product_ids: ["ok", ""] }).map(
+        (i) => i.path,
+      ),
+    ).toEqual(["trigger.product_ids"]);
+    expect(validateTriggerForActivation("catalog_order", {})).toEqual([]);
+  });
+});

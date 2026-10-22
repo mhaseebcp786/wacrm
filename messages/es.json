@@ -1012,7 +1012,8 @@
         "wait": "Esperar",
         "condition": "Condición (Si/Si no)",
         "send_webhook": "Enviar webhook",
-        "close_conversation": "Cerrar conversación"
+        "close_conversation": "Cerrar conversación",
+        "send_rich_message": "Enviar mensaje enriquecido"
       },
       "triggers": {
         "new_message_received": {
@@ -1046,6 +1047,30 @@
         "time_based": {
           "label": "Por horario",
           "hint": "Según una programación recurrente"
+        },
+        "button_reply": {
+          "label": "Botón pulsado",
+          "hint": "El cliente pulsa un botón de respuesta (por su texto, o cualquier botón)"
+        },
+        "list_reply": {
+          "label": "Fila de lista elegida",
+          "hint": "El cliente elige una fila de lista (por su texto, o cualquier fila)"
+        },
+        "flow_response": {
+          "label": "Formulario enviado",
+          "hint": "El cliente envía un formulario de WhatsApp Flow"
+        },
+        "meta_ads_ctwa": {
+          "label": "Clic en anuncio (Click-to-WhatsApp)",
+          "hint": "El cliente inicia el chat desde un anuncio de Facebook o Instagram"
+        },
+        "catalog_order": {
+          "label": "Pedido del catálogo",
+          "hint": "El cliente envía un pedido del catálogo de WhatsApp"
+        },
+        "anything_else": {
+          "label": "Cualquier otro mensaje (alternativa)",
+          "hint": "Un mensaje que ninguna otra automatización atendió"
         }
       },
       "trigger": "Disparador",
@@ -3214,5 +3239,30 @@
     "editAria": "Editar «{name}»",
     "deleteAria": "Eliminar «{name}»",
     "retry": "Reintentar"
+  },
+  "SaasAutomations": {
+    "validation": {
+      "textInvalid": "el texto debe ser una cadena",
+      "textTooLong": "el texto puede tener como máximo {max} caracteres",
+      "productIdsInvalid": "los ids de producto deben ser cadenas no vacías",
+      "productIdsTooMany": "se permiten como máximo {max} ids de producto"
+    },
+    "trigger": {
+      "buttonTextLabel": "Texto del botón (opcional)",
+      "buttonTextPlaceholder": "Déjalo vacío para cualquier botón",
+      "buttonTextHelp": "Se ejecuta cuando el cliente pulsa un botón de respuesta con este texto (no distingue mayúsculas). Vacío se ejecuta con cualquier botón, incluidos los de plantillas y difusiones.",
+      "rowTextLabel": "Texto de la fila (opcional)",
+      "rowTextPlaceholder": "Déjalo vacío para cualquier fila",
+      "rowTextHelp": "Se ejecuta cuando el cliente elige una fila de lista con este texto (no distingue mayúsculas). Vacío se ejecuta con cualquier fila.",
+      "formHelp": "Se ejecuta cuando el cliente envía un formulario de WhatsApp Flow (cualquiera).",
+      "adHelp": "Se ejecuta cuando el cliente inicia el chat al tocar un anuncio Click-to-WhatsApp en Facebook o Instagram.",
+      "productIdsLabel": "Ids de producto (opcional)",
+      "productIdsPlaceholder": "sku-1, sku-2",
+      "productIdsHelp": "Ids de producto (del vendedor) de tu catálogo, separados por comas. Se ejecuta cuando el pedido incluye alguno. Vacío se ejecuta con cualquier pedido.",
+      "fallbackHelp": "Se ejecuta solo cuando ninguna automatización de palabra clave, id de botón, botón, lista, formulario, anuncio o primer mensaje atendió el mensaje; úsala como respuesta general. Se omite para pulsaciones, formularios y pedidos. Una automatización de \"Mensaje nuevo recibido\" se ejecuta con todos los mensajes y no la detiene."
+    },
+    "step": {
+      "richHint": "Envía un mensaje creado en el editor de mensajes: texto, foto, video, audio, documento, botones, lista, tarjetas, ubicación o contacto."
+    }
   }
 }
