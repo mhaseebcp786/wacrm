@@ -95,7 +95,9 @@ The UI ships in English, Korean, Brazilian Portuguese and Spanish — set
 (catalogues live in `messages/`).
 
 Prefer containers? See [docs/docker.md](./docs/docker.md) for the
-Dockerfile + Docker Compose setup.
+Dockerfile + Docker Compose setup. For a production server on AWS
+Lightsail with automatic HTTPS, cron, backups and push-to-deploy, see
+[docs/deploy-lightsail.md](./docs/deploy-lightsail.md).
 
 ## 🚀 Deploy on Hostinger (recommended)
 

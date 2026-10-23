@@ -2,9 +2,11 @@ name: CI
 
 on:
   pull_request:
-    branches: [main]
+    branches: [main, saas-main]
   push:
-    branches: [main]
+    # saas-main is the production branch: deploy-lightsail.yml ships it
+    # only after this workflow passes on it.
+    branches: [main, saas-main]
 
 # Cancel older CI runs for the same branch when a new commit arrives —
 # saves minutes when someone pushes a stack of fixes to one PR.

@@ -1,0 +1,23 @@
+# Public entrypoint. DOMAIN and ACME_EMAIL come from /opt/wacrm/.env
+# via compose.yml.
+#
+# Caddy issues and renews the TLS certificate automatically. For that,
+# DOMAIN's A record must point at the instance's static IP and ports
+# 80 + 443 must be open in the Lightsail firewall. If DNS is on
+# Cloudflare, leave the record "DNS only" (grey cloud) — see
+# docs/deploy-lightsail.md for why.
+{
+	email {$ACME_EMAIL}
+}
+
+{$DOMAIN} {
+	encode zstd gzip
+
+	# Caddy overwrites X-Forwarded-For with the real client address
+	# (it ignores whatever the client sent, since no trusted_proxies are
+	# configured), so the per-IP rate limits on /api/invitations/* key
+	# on the actual caller. It also forwards Host and X-Forwarded-Proto,
+	# which invite-link generation reads when NEXT_PUBLIC_SITE_URL is
+	# unset.
+	reverse_proxy app:3000
+}

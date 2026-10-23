@@ -47,3 +47,6 @@ next-env.d.ts
 /playwright-report/
 /test-results/
 /.playwright/
+
+# supabase CLI link state (project ref, pooler host, versions)
+/supabase/.temp/
