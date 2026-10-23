@@ -1,0 +1,174 @@
+name: Deploy to Lightsail
+
+# Builds the Docker image on GitHub's runners, pushes it to GHCR, and
+# rolls it out to the Lightsail instance over SSH. Setup and the list
+# of secrets/variables: docs/deploy-lightsail.md.
+#
+# Production is the `saas-main` branch; `main` tracks upstream wacrm
+# and is never deployed. Runs after CI succeeds on saas-main, so a
+# commit that fails lint, types, tests or build never ships.
+# `workflow_dispatch` re-deploys saas-main by hand (e.g. after editing
+# /opt/wacrm/.env you only need `docker compose up -d` on the box, but
+# this works too).
+#
+# The whole job is skipped until the LIGHTSAIL_HOST repository
+# variable exists, so a fork that hasn't set up a server stays green.
+
+on:
+  workflow_run:
+    workflows: [CI]
+    types: [completed]
+    branches: [saas-main]
+  workflow_dispatch:
+
+# Never run two rollouts at once, and never cancel one halfway.
+concurrency:
+  group: deploy-lightsail
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+  packages: write
+
+jobs:
+  deploy:
+    name: Build image and roll out
+    # CI also runs on pull requests, and `branches: [saas-main]` above
+    # matches a fork PR whose head branch happens to share that name.
+    # Only deploy CI runs that came from a push to this repository —
+    # otherwise a fork's code would be built with this repo's secrets.
+    # A manual run must also be started from saas-main.
+    if: >-
+      vars.LIGHTSAIL_HOST != '' &&
+      ((github.event_name == 'workflow_dispatch' && github.ref_name == 'saas-main') ||
+       (github.event.workflow_run.conclusion == 'success' &&
+        github.event.workflow_run.event == 'push' &&
+        github.event.workflow_run.head_repository.full_name == github.repository))
+    runs-on: ubuntu-latest
+    env:
+      # workflow_run fires on the default branch's latest commit, not
+      # the one CI checked — pin to the commit CI actually passed.
+      SHA: ${{ github.event.workflow_run.head_sha || github.sha }}
+    steps:
+      - name: Check configuration
+        env:
+          SUPABASE_URL: ${{ vars.NEXT_PUBLIC_SUPABASE_URL }}
+          SUPABASE_ANON_KEY: ${{ vars.NEXT_PUBLIC_SUPABASE_ANON_KEY }}
+          SITE_URL: ${{ vars.NEXT_PUBLIC_SITE_URL }}
+          SSH_KEY: ${{ secrets.LIGHTSAIL_SSH_KEY }}
+          KNOWN_HOSTS: ${{ secrets.LIGHTSAIL_KNOWN_HOSTS }}
+        run: |
+          missing=()
+          [[ -n "$SUPABASE_URL" ]] || missing+=("variable NEXT_PUBLIC_SUPABASE_URL")
+          [[ -n "$SUPABASE_ANON_KEY" ]] || missing+=("variable NEXT_PUBLIC_SUPABASE_ANON_KEY")
+          [[ -n "$SITE_URL" ]] || missing+=("variable NEXT_PUBLIC_SITE_URL")
+          [[ -n "$SSH_KEY" ]] || missing+=("secret LIGHTSAIL_SSH_KEY")
+          [[ -n "$KNOWN_HOSTS" ]] || missing+=("secret LIGHTSAIL_KNOWN_HOSTS")
+          if (( ${#missing[@]} )); then
+            printf '::error::Missing repository %s\n' "${missing[@]}"
+            exit 1
+          fi
+
+      - uses: actions/checkout@v7
+        with:
+          ref: ${{ env.SHA }}
+
+      - name: Resolve image name
+        # GHCR requires lowercase repository names.
+        run: |
+          echo "IMAGE=ghcr.io/${GITHUB_REPOSITORY,,}" >> "$GITHUB_ENV"
+          echo "TAG=sha-${SHA::12}" >> "$GITHUB_ENV"
+
+      - uses: docker/setup-buildx-action@v4
+
+      - uses: docker/login-action@v4
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      # NEXT_PUBLIC_* are inlined into the client bundle here (see the
+      # Dockerfile), so they come from repository *variables*. None are
+      # secret — the anon key is designed to ship to browsers. Server
+      # secrets stay in /opt/wacrm/.env and never enter the image.
+      - uses: docker/build-push-action@v7
+        with:
+          context: .
+          platforms: linux/amd64
+          push: true
+          tags: |
+            ${{ env.IMAGE }}:${{ env.TAG }}
+            ${{ env.IMAGE }}:latest
+          build-args: |
+            NEXT_PUBLIC_SUPABASE_URL=${{ vars.NEXT_PUBLIC_SUPABASE_URL }}
+            NEXT_PUBLIC_SUPABASE_ANON_KEY=${{ vars.NEXT_PUBLIC_SUPABASE_ANON_KEY }}
+            NEXT_PUBLIC_SITE_URL=${{ vars.NEXT_PUBLIC_SITE_URL }}
+            NEXT_PUBLIC_APP_LOCALE=${{ vars.NEXT_PUBLIC_APP_LOCALE || 'en' }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+      - name: Configure SSH
+        env:
+          SSH_KEY: ${{ secrets.LIGHTSAIL_SSH_KEY }}
+          KNOWN_HOSTS: ${{ secrets.LIGHTSAIL_KNOWN_HOSTS }}
+          HOST: ${{ vars.LIGHTSAIL_HOST }}
+          SSH_USER: ${{ vars.LIGHTSAIL_USER || 'ubuntu' }}
+        # Host key comes from a secret rather than ssh-keyscan at run
+        # time, so a spoofed server can't receive the registry token.
+        run: |
+          install -m 700 -d ~/.ssh
+          printf '%s\n' "$SSH_KEY" > ~/.ssh/id_deploy
+          chmod 600 ~/.ssh/id_deploy
+          printf '%s\n' "$KNOWN_HOSTS" > ~/.ssh/known_hosts
+          cat > ~/.ssh/config <<EOF
+          Host lightsail
+            HostName $HOST
+            User $SSH_USER
+            IdentityFile ~/.ssh/id_deploy
+            IdentitiesOnly yes
+            StrictHostKeyChecking yes
+            ServerAliveInterval 30
+          EOF
+
+      - name: Upload stack config
+        run: |
+          scp deploy/lightsail/compose.yml deploy/lightsail/Caddyfile \
+            deploy/lightsail/cron.sh deploy/lightsail/backup.sh \
+            deploy/lightsail/set-secret.sh \
+            lightsail:/opt/wacrm/
+          ssh lightsail 'chmod +x /opt/wacrm/*.sh'
+
+      - name: Roll out
+        env:
+          GHCR_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        # The job's GITHUB_TOKEN can read this repo's package and dies
+        # when the job ends, so the server never holds a long-lived
+        # registry credential. It goes over stdin, not argv.
+        run: |
+          # shellcheck disable=SC2029 # GITHUB_ACTOR is meant to expand here, on the runner.
+          printf '%s' "$GHCR_TOKEN" | ssh lightsail \
+            "docker login ghcr.io -u '${GITHUB_ACTOR}' --password-stdin >/dev/null"
+
+          ssh lightsail bash -s -- "${IMAGE}:${TAG}" <<'EOF'
+          set -euo pipefail
+          trap 'docker logout ghcr.io >/dev/null 2>&1 || true' EXIT
+          cd /opt/wacrm
+          if [[ ! -f .env ]]; then
+            echo "::error::/opt/wacrm/.env is missing — see docs/deploy-lightsail.md"
+            exit 1
+          fi
+
+          export APP_IMAGE="$1"
+          docker compose pull --quiet
+          # `cron` waits on app's healthcheck, so this blocks until the
+          # new container is healthy and fails the job if it never is.
+          if ! docker compose up -d --remove-orphans --wait --wait-timeout 180; then
+            docker compose ps
+            docker compose logs --tail 100 app
+            exit 1
+          fi
+
+          # Keep about a week of previous images for quick rollbacks.
+          docker image prune -af --filter until=168h >/dev/null
+          echo "Deployed ${APP_IMAGE}"
+          EOF

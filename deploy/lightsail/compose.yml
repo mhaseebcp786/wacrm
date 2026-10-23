@@ -1,0 +1,94 @@
+# Production stack for a single AWS Lightsail instance.
+#
+# Lives at /opt/wacrm/compose.yml on the server (the deploy workflow
+# copies it there on every release). Three services:
+#
+#   app   — the Next.js image built by .github/workflows/deploy-lightsail.yml
+#           and pulled from GHCR. Never builds on the box: `next build`
+#           needs more RAM than a 1 GB instance has.
+#   caddy — public entrypoint on :80/:443. Gets and renews the Let's
+#           Encrypt certificate for $DOMAIN on its own.
+#   cron  — pings the two scheduled endpoints over the internal network.
+#           Nothing inside the app schedules them (docs/docker.md).
+#
+# Config comes from /opt/wacrm/.env (template: deploy/lightsail/.env.example).
+# Compose reads that file both for ${VAR} substitution below and, via
+# env_file, as the app's runtime environment.
+
+name: wacrm
+
+x-logging: &logging
+  # Docker's default json-file driver never rotates. On a 40 GB disk a
+  # chatty webhook would eventually fill it.
+  driver: json-file
+  options:
+    max-size: 10m
+    max-file: '5'
+
+services:
+  app:
+    # The deploy workflow exports APP_IMAGE=<registry>:sha-<commit> when
+    # it rolls out; manual `docker compose` runs fall back to the value
+    # in .env (normally the :latest tag of the same image).
+    image: ${APP_IMAGE:?set APP_IMAGE in /opt/wacrm/.env}
+    env_file:
+      - .env
+    environment:
+      PORT: 3000
+      HOSTNAME: 0.0.0.0
+    # No `ports:` — only Caddy is reachable from outside.
+    expose:
+      - '3000'
+    restart: unless-stopped
+    healthcheck:
+      test:
+        [
+          'CMD',
+          'node',
+          '-e',
+          "fetch('http://localhost:3000').then((r)=>process.exit(r.ok||r.status<500?0:1)).catch(()=>process.exit(1))",
+        ]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 20s
+    logging: *logging
+
+  caddy:
+    image: caddy:2.11-alpine
+    depends_on:
+      - app
+    environment:
+      DOMAIN: ${DOMAIN:?set DOMAIN in /opt/wacrm/.env}
+      ACME_EMAIL: ${ACME_EMAIL:?set ACME_EMAIL in /opt/wacrm/.env}
+    ports:
+      - '80:80'
+      - '443:443'
+      # HTTP/3. Optional — browsers fall back to TCP if the Lightsail
+      # firewall doesn't open UDP 443.
+      - '443:443/udp'
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      # Certificates live here. Losing this volume means re-issuing,
+      # and Let's Encrypt rate-limits repeated issuance for one domain.
+      - caddy_data:/data
+      - caddy_config:/config
+    restart: unless-stopped
+    logging: *logging
+
+  cron:
+    image: alpine:3.24
+    depends_on:
+      app:
+        condition: service_healthy
+    environment:
+      AUTOMATION_CRON_SECRET: ${AUTOMATION_CRON_SECRET:?set AUTOMATION_CRON_SECRET in /opt/wacrm/.env}
+    volumes:
+      - ./cron.sh:/cron.sh:ro
+    command: ['/bin/sh', '/cron.sh']
+    restart: unless-stopped
+    logging: *logging
+
+volumes:
+  caddy_data:
+  caddy_config:
